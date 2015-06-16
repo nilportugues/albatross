@@ -1,0 +1,34 @@
+#!/bin/bash
+
+#
+# Use this script to unfuck a corrupted archive.
+# Typically, archives are broken in just one spot, one 900k (uncompressed)
+# fragment of a much larger file.  Due to how we parse this file however, this
+# small corruption is typically enough to truncate all remaining tweets from
+# being shown on the site.
+#
+# The fix is to use `bzip2recover`, a script that breaks the archive into
+# thousands of tiny fragments, and then recombine those fragments into a now
+# unfucked file.
+#
+# Note that if this is being used on an active archive, you must first toggle
+# the `allow_consumption` flag in the db, then restart the collector.  Once the
+# unfucking is complete, you can turn consumption back on and then restart the
+# collector.
+#
+
+original=$(echo $1 | sed -e 's/\.bz2//');
+
+echo "Recovering ${original} into fragments"
+bzip2recover ${original}.bz2 >& /dev/null
+
+echo "Compositing those fragments back into a new unfucked compressed file"
+for f in rec*${original}.bz2; do
+  lbzcat ${f}
+done | lbzip2 > ${original}.unfucked.bz2
+
+echo "Removing the now useless fragments"
+rm rec*${original}.bz2
+
+echo "Now you can overwrite the old file if you like"
+echo "mv ${original}.unfucked.bz2 ${original}.bz2"

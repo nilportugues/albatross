@@ -1,0 +1,90 @@
+{% extends 'archive/detail/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block css %}
+
+  {{ block.super }}
+
+  <link rel="stylesheet" href="{% static 'contrib/jquery/jqvmap/jqvmap.css' %}" />
+  <link rel="stylesheet" href="{% static 'contrib/c3/c3.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'archive/css/statistics.css' %}?v={{ release }}" />
+
+{% endblock css %}
+
+
+{% block content %}
+
+  {{ block.super }}
+
+  <div class="col-xs-12 col-md-6 col-lg-4" id="languages"></div>
+  <div class="col-xs-12 col-md-6 col-lg-4" id="hashtags"></div>
+  <div class="col-xs-12 col-md-6 col-lg-4" id="mentions"></div>
+  <div class="col-xs-12 col-md-6 col-lg-4" id="countries"></div>
+  <div class="col-xs-12 col-md-6 col-lg-4" id="makeup"></div>
+  <div class="col-xs-12 col-md-6 col-lg-4" id="sentiments"></div>
+
+  {% comment %}
+  <div class="col-xs-12 col-md-6 col-lg-4" id="simple">
+    <h2>Simple Stats</h2>
+    <div id="simple-table"></div>
+    <div class="clearfix"></div>
+  </div>
+  {% endcomment %}
+
+  <div class="clearfix"></div>
+
+  <div class="col-xs-12">
+    <h2>Hours</h2>
+    <div id="hours" style="height: 500px; width: 100%;"></div>
+  </div>
+  <div class="clearfix"></div>
+
+  <h2>Locations</h2>
+  <div id="map" class="map"></div>
+
+{% endblock content %}
+
+
+{% block subnav_statistics %}active{% endblock subnav_statistics %}
+
+
+{% block js %}
+
+  {{ block.super }}
+
+  <script type="application/javascript" src="{% static 'contrib/jquery/jqvmap/jquery.vmap.min.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/jquery/jqvmap/maps/jquery.vmap.world.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/d3/d3.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/c3/c3.min.js' %}"></script>
+  <script type="application/javascript" src="{% static 'archive/js/this-is-getting-ridiculous.js' %}?v={{ release }}"></script>
+  <script>
+
+    {# This would probably all be best handled via an API call. #}
+    {# If you edit this again, do that instead of just appending to this. #}
+
+    var events = [];
+    {% for event in archive.events.all %}
+      events.push({
+        "value": new Date({{ event.time|date:'U000' }}),
+        "text": "{{ event.label|safe }}",
+        "class": "grid-annotation",
+        "position": "end"
+      });
+    {% endfor %}
+
+    $(document).ready(function() {
+      var statistics = Statistics(
+        albatross,
+        {{ archive.pk }},
+        "{{ archive.query }}",
+        {{ archive.colour_overrides|default:'null'|safe }},
+        events
+      );
+    });
+
+  </script>
+
+{% endblock js %}

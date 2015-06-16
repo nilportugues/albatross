@@ -1,0 +1,44 @@
+{% extends 'albatross/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block content %}
+    <ul class="nav nav-pills navbar-right well-sm" style="margin-top: 10px;">
+      {% if archive.total < 3000 %}
+        <li class="{% block subnav_text %}{% endblock %}">
+          <a href="{% url 'detail-text' pk=archive.pk %}">
+            <i class="fa fa-th-list fa-fw"></i>
+            Text
+          </a>
+        </li>
+      {% endif %}
+      {% if archive.total > 200 %}
+        <li class="{% block subnav_cloud %}{% endblock %} hidden-xs">
+          <a href="{% url 'detail-cloud' pk=archive.pk %}">
+            <i class="fa fa-cloud fa-fw"></i> Word Cloud
+          </a>
+        </li>
+      {% endif %}
+      {% if archive.statistics_generated %}
+        <li class="{% block subnav_statistics %}{% endblock %}">
+          <a href="{% url 'detail-statistics' pk=archive.pk %}">
+            <i class="fa fa-pie-chart fa-fw"></i> Statistics
+          </a>
+        </li>
+        <li class="{% block subnav_images %}{% endblock %} hidden-xs">
+          <a href="{% url 'detail-images' pk=archive.pk %}">
+            <i class="fa fa-camera fa-fw"></i> Images
+          </a>
+        </li>
+        <li class="{% block subnav_map %}{% endblock %} hidden-xs">
+          <a href="{% url 'detail-map' pk=archive.pk %}">
+            <i class="fa fa-map-marker fa-fw"></i> Map
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  <h2>{{ archive.query }} <small>({{ archive.total }} tweets)</small></h2>
+  <p class="text-muted">From {{ archive.started }} {% if archive.stopped %} until {{ archive.stopped }}{% endif %}</p>
+{% endblock content %}

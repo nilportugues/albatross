@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:alpine
+  rabbitmq:
+    image: rabbitmq:alpine
+  redis:
+    image: redis:alpine
+  celery:
+    build: ./
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    volumes:
+      - .:/app
+    user: app
+    entrypoint: '/bin/sh /app/docker/celery'
+  collector:
+    build: ./
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+      - celery
+    volumes:
+      - .:/app
+    user: app
+    entrypoint: '/bin/sh /app/docker/collector'
+  web:
+    build: ./
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - .:/app
+    ports:
+      - '8000:8000'
+    user: app
+    entrypoint: '/bin/sh /app/docker/web'

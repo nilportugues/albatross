@@ -1,0 +1,113 @@
+{% extends 'albatross/base.html' %}
+
+
+{% load staticfiles %}
+{% load socialaccount %}
+
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'archive/css/index.css' %}?v={{ release }}" />
+  <link rel="stylesheet" href="{% static 'contrib/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" />
+{% endblock css %}
+
+
+{% block banner %}
+  <div class="shiny">
+    <h1>TweetPile<span class="beta">BETA</span></h1>
+    <p class="lead">Collect whatever is said, about whatever you like.</p>
+  </div>
+{% endblock banner %}
+
+
+{% block content %}
+
+  <div class="well col-md-8 col-md-offset-2">
+    {% if user.is_authenticated %}
+      <form class="form-horizontal" method="post">
+        <fieldset>
+          <legend>Create a new Archive</legend>
+          {% for error in form.non_field_errors %}
+            <div class="alert alert-danger">{{ error }}</div>
+          {% endfor %}
+          <div class="form-group">
+            <label for="{{ form.query.id_for_label }}" class="col-lg-2 control-label">Search String</label>
+            <div class="col-lg-10">
+              {{ form.query }}
+              {{ form.query.errors }}
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="{{ form.start.id_for_label }}" class="col-lg-2 control-label">Start Time</label>
+            <div class="col-lg-10">
+              {{ form.start }}
+              {{ form.start.errors }}
+            </div>
+          </div>
+          <div class="form-group duration-selector">
+            <label for="{{ form.duration.id_for_label }}" class="col-lg-2 control-label">Duration</label>
+            <div class="col-lg-10">
+              {{ form.duration }}
+              {{ form.duration.errors }}
+            </div>
+          </div>
+          <div class="form-group pull-right">
+            <div class="col-lg-10 col-lg-offset-2">
+              <button type="reset" class="btn btn-default">Cancel</button>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        </fieldset>
+        {% csrf_token %}
+      </form>
+    {% else %}
+      <h3 class="text-center">
+        To start your own collection, {% for provider in socialaccount.providers %}
+          <a
+            title="Log in with {{ provider.name }}"
+            class="socialaccount_provider {{ provider.id }} btn btn-info"
+            href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"
+          >Log In <i class="fa fa-fw fa-twitter"></i></a>
+        {% endfor %}
+      </h3>
+    {% endif %}
+  </div>
+
+  <div class="clearfix"></div>
+
+  <div>
+    <h2 class="col-sm-6">Archives Available</h2>
+    {% if user.is_authenticated %}
+      <div class="isotope-filters col-sm-6" role="group">
+        <div class="pull-right">
+        <div class="btn-group possession">
+          <button type="button" class="btn btn-primary active" data-filter="*">All</button>
+          <button type="button" class="btn btn-primary" data-filter=".mine">Mine</button>
+        </div>
+        <div class="btn-group statuses">
+          <button type="button" class="btn btn-primary active" data-filter="*">All</button>
+          <button type="button" class="btn btn-primary" data-filter=".running">Running</button>
+          <button type="button" class="btn btn-primary" data-filter=".stopped">Stopped</button>
+        </div>
+        </div>
+      </div>
+    {% endif %}
+    <div class="clearfix"></div>
+    <div id="archives" class="grid">
+      <div class="grid-sizer"></div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block js %}
+  {{ block.super }}
+  <script type="application/javascript" src="{% static 'contrib/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/filesize.min.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/isotope.pkgd.min.js' %}"></script>
+  <script type="application/javascript" src="{% static 'archive/js/home.js' %}?v={{ release }}"></script>
+  <script type="application/javascript">
+    Home(albatross, {{ user.pk|default_if_none:0 }});
+  </script>
+{% endblock js %}

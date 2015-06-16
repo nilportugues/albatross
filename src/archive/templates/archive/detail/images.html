@@ -1,0 +1,123 @@
+{% extends 'archive/detail/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block css %}
+
+  {{ block.super }}
+  <style>
+    * {
+      -webkit-box-sizing: border-box;
+         -moz-box-sizing: border-box;
+              box-sizing: border-box;
+    }
+
+    /* force scrollbar */
+    html { overflow-y: scroll; }
+
+    /* ---- isotope ---- */
+
+    .grid {
+      background: #dddddd;
+      border: 1px solid #999999;
+      opacity: 0;
+      transition: ease opacity 1s;
+    }
+    .grid.show {
+      opacity: 1;
+    }
+
+    /* clear fix */
+    .grid:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    /* ---- .grid-item ---- */
+
+    .grid-sizer,
+    .grid-item {
+      width: 5%;
+      max-height: 200px;
+      opacity: 0.5;
+      transition: ease opacity 0.5s;
+      overflow: hidden;
+    }
+    .grid-item-weight2 { width:  10%; }
+    .grid-item-weight3 { width:  15%; }
+    .grid-item-weight4 { width:  20%; }
+    .grid-item-weight5 { width:  25%; }
+    .grid-item:hover {
+      opacity: 1;
+    }
+
+    .grid-item {
+      float: left;
+      cursor: pointer;
+    }
+
+    .grid-item img {
+      display: block;
+      max-width: 100%;
+    }
+    .modal-dialog {
+      max-width: 80%;
+    }
+    .modal-body img {
+      max-width: 100%;
+    }
+    .modal-body .source {
+      margin: 10px;
+    }
+    .modal-body .users .user {
+      margin: 0 5px;
+    }
+    body.modal-open {
+      padding-right: 0 !important;
+    }
+  </style>
+
+{% endblock css %}
+
+
+{% block content %}
+
+  {{ block.super }}
+
+  <div class="col-xs-12" id="gallery">
+    {% include 'archive/detail/loading.html' %}
+    <div class="grid">
+      <div class="grid-sizer"></div>
+    </div>
+  </div>
+
+  {# Modal #}
+  <div class="modal fade" id="lightbox">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body text-center"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+{% endblock content %}
+
+
+{% block subnav_images %}active{% endblock subnav_images %}
+
+
+{% block js %}
+  {{ block.super }}
+  <script type="application/javascript" src="{% static 'contrib/imagesloaded.pkgd.min.js' %}?v={{ release }}"></script>
+  <script type="application/javascript" src="{% static 'contrib/masonry.pkgd.min.js' %}?v={{ release }}"></script>
+  <script type="application/javascript" src="{% static 'archive/js/images.js' %}?v={{ release }}"></script>
+  <script>
+    Images(albatross, {{ archive.pk }});
+  </script>
+{% endblock js %}

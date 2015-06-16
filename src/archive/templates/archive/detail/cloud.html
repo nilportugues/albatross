@@ -1,0 +1,29 @@
+{% extends 'archive/detail/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block content %}
+
+  {{ block.super }}
+
+  <div class="col-xs-12" id="cloud">
+    {% include 'archive/detail/loading.html' %}
+  </div>
+
+{% endblock content %}
+
+
+{% block subnav_cloud %}active{% endblock subnav_cloud %}
+
+
+{% block js %}
+  {{ block.super }}
+  <script type="application/javascript" src="{% static 'contrib/d3/d3.js' %}?v={{ release }}"></script>
+  <script type="application/javascript" src="{% static 'contrib/d3/d3.layout.cloud.js' %}?v={{ release }}"></script>
+  <script type="application/javascript" src="{% static 'archive/js/cloud.js' %}?v={{ release }}"></script>
+  <script>
+    Cloud(albatross, {{ archive.pk }});
+  </script>
+{% endblock js %}

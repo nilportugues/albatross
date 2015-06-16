@@ -1,0 +1,96 @@
+{% load staticfiles %}{% load socialaccount %}<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <title>TweetPile: Collect whatever is said, about whatever you like.</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="stylesheet" href="{% static 'contrib/yeti/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'contrib/yeti/fonts.css' %}" />
+    <link rel="stylesheet" href="{% static 'contrib/fontawesome/css/font-awesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'albatross/css/general.css' %}?v={{ release }}" />
+    {% block css %}{% endblock css %}
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="{% url 'index' %}" class="navbar-brand">TweetPile</a>
+          <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+            <i class="fa fa-bars"></i>
+          </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+          <ul class="nav navbar-nav navbar-right">
+            {% include 'albatross/navigation.html' %}
+          </ul>
+
+        </div>
+      </div>
+    </div>
+
+    {% block banner %}{% endblock banner %}
+
+    <div class="container" id="global-container">
+
+      {% block messages %}
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+      {% endblock messages %}
+
+      {% block content %}{% endblock content %}
+
+      <div class="clearfix"></div>
+
+      <footer>
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <a href="{% url 'archives' %}" class="label label-default" data-toggle="tooltip" title="API"><i class="fa fa-gears fa-fw"></i><span class="sr-only">API</span></a> &nbsp;
+            <a href="https://twitter.com/thetweetpile" class="label label-default" data-toggle="tooltip" title="Say hello"><i class="fa fa-twitter fa-fw"></i><span class="sr-only">Contact</span></a>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="application/javascript" src="{% static 'contrib/jquery/jquery.min.js' %}"></script>
+    <script type="application/javascript" src="{% static 'contrib/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script type="application/javascript" src="{% static 'contrib/moment.min.js' %}"></script>
+    <script type="application/javascript" src="{% static 'contrib/jquery/tweetparser/tweetParser.min.js' %}?v={{ release }}"></script>
+    <script type="application/javascript" src="{% static 'contrib/jquery/tweetparser/jquery.tweetParser.js' %}?v={{ release }}"></script>
+    <script type="application/javascript" src="{% static 'albatross/js/general.js' %}?v={{ release }}"></script>
+
+    <script type="application/javascript">
+      $('[data-toggle="tooltip"]').tooltip();
+      var albatross = Albatross({
+        api: {
+          archives: {
+            listing: "{% url 'archives' %}",
+            detail: "{% url 'archives-detail' pk='0000' %}",
+            distillation: {
+              cloud: "{% url 'archives-distillation' pk='0000' kind='cloud' %}",
+              images: "{% url 'archives-distillation' pk='0000' kind='images' %}",
+              map: "{% url 'archives-distillation' pk='0000' kind='map' %}",
+              statistics: "{% url 'archives-distillation' pk='0000' kind='statistics' %}"
+            },
+            subset: "{% url 'archives-subset' pk='0000' %}"
+          }
+        },
+        detail: {
+          text: "{% url 'detail-text' pk='0000' %}",
+          cloud: "{% url 'detail-cloud' pk='0000' %}",
+          statistics: "{% url 'detail-statistics' pk='0000' %}",
+          images: "{% url 'detail-images' pk='0000' %}",
+          map: "{% url 'detail-map' pk='0000' %}"
+        }
+      });
+    </script>
+
+    {% block js %}{% endblock js %}
+
+  </body>
+
+</html>

@@ -1,0 +1,61 @@
+{% extends 'archive/detail/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block css %}
+
+  {{ block.super }}
+
+  <style>
+    .tweet .image {
+      float: left;
+      margin: 1em;
+    }
+    .tweet .username {
+      font-weight: bold;
+    }
+    .tweet .options {
+      float: right;
+      margin: 0.5em;
+    }
+  </style>
+
+{% endblock css %}
+
+
+{% block content %}
+
+  {{ block.super }}
+
+  <div class="col-md-8 col-lg-6">
+    <form method="get" class="horizontal-form">
+      <label for="language" class="control-label col-sm-2">Language:</label>
+      <div class="col-sm-10">
+        <select name="language" id="language" class="form-control">
+          <option value="">No Restriction</option>
+        </select>
+      </div>
+    </form>
+    <div class="clearfix" style="margin-bottom: 10px;"></div>
+    <div id="tweets">
+      {% include 'archive/detail/loading.html' %}
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block subnav_text %}active{% endblock subnav_text %}
+
+
+{% block js %}
+
+  {{ block.super }}
+
+  <script type="application/javascript" src="{% static 'archive/js/text.js' %}?v={{ release }}"></script>
+  <script>
+    Listing(albatross, {{ archive.pk }});
+  </script>
+
+{% endblock js %}

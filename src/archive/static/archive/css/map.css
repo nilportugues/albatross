@@ -1,0 +1,20 @@
+#map {
+  border: 1px solid #cccccc;
+}
+.loading {
+  margin: 2em 2em;
+}
+.leaflet-popup-content {
+  color: #000000;
+}
+  .leaflet-popup-content .user {
+    margin: 0 5px 5px 0;
+  }
+  .leaflet-popup-content .user img {
+    border: 1px solid #cccccc;
+    border-radius: 50%;
+  }
+.sadface {
+  margin: 3em;
+  text-align: center;
+}

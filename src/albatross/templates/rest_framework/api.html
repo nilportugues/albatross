@@ -1,0 +1,48 @@
+{% extends "rest_framework/base.html" %}
+
+
+{% load staticfiles %}
+
+
+{% block title %}TweetPile :: API{% endblock title %}
+
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'contrib/yeti/bootstrap.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'contrib/yeti/fonts.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+  <link rel="stylesheet" href="{% static 'contrib/fontawesome/css/font-awesome.min.css' %}" />
+{% endblock %}
+
+
+{% block branding %}
+  <a class='navbar-brand' rel="nofollow" href='http://tweetpile.com/'>
+    TweetPile <small style="opacity: 0.8">Collect whatever is said, about whatever you like.</small>
+  </a>
+{% endblock %}
+
+
+{% block userlinks %}
+  {% include 'albatross/navigation.html' %}
+{% endblock userlinks %}
+
+
+{% block body %}
+
+  {{ block.super }}
+
+  <div class="clearfix"></div>
+
+  <footer>
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <a href="https://twitter.com/thetweetpile" class="label label-default" data-toggle="tooltip" title="Say hello"><i class="fa fa-twitter fa-fw"></i><span class="sr-only">Contact</span></a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="application/javascript">
+    $('[data-toggle="tooltip"]').tooltip();
+  </script>
+
+{% endblock body %}

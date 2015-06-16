@@ -1,0 +1,50 @@
+{% extends 'archive/detail/base.html' %}
+
+
+{% load staticfiles %}
+
+
+{% block css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'contrib/leaflet/leaflet.css' %}" />
+  <link rel="stylesheet" href="{% static 'contrib/leaflet/MarkerCluster.css' %}" />
+  <link rel="stylesheet" href="{% static 'contrib/leaflet/MarkerCluster.Default.css' %}" />
+  <link rel="stylesheet" href="{% static 'archive/css/map.css' %}?v={{ release }}" />
+{% endblock css %}
+
+
+{% block content %}
+
+  {{ block.super }}
+
+  <div class="col-xs-12">
+    <h3>Locations</h3>
+    <div id="map-container">
+      <div id="map" style="width: 100%; height: 1000px;">
+        {% include 'archive/detail/loading.html' %}
+      </div>
+      <div class="col-md-6 col-md-offset-3">
+        <p class="text-center">
+          Note that this map only shows tweets that were geotagged at the time.  As
+          a result, this represents only a fraction of tweets actually posted during
+          the capture window.
+        </p>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+
+{% block subnav_map %}active{% endblock subnav_map %}
+
+
+{% block js %}
+  {{ block.super }}
+  <script type="application/javascript" src="{% static 'contrib/leaflet/leaflet.js' %}"></script>
+  <script type="application/javascript" src="{% static 'contrib/leaflet/leaflet.markercluster-src.js' %}"></script>
+  <script type="application/javascript" src="{% static 'archive/js/map.js' %}?v={{ release }}"></script>
+  <script>
+    Map(albatross, {{ archive.pk }});
+  </script>
+{% endblock js %}

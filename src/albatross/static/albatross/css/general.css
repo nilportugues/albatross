@@ -1,0 +1,31 @@
+.label {
+  display: inline-block;
+  border-radius: 4px;
+}
+.beta {
+  border-radius: 10%;
+  background-color: #cccccc;
+  color: #000000;
+  font-size: x-small;
+  padding: 0.5em;
+  margin: 0 0 0 1em;
+  display: inline-block;
+  vertical-align: 150%;
+}
+.help {
+  cursor: help;
+}
+.jqstooltip {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+footer {
+  margin-bottom: 1em;
+}
+.alert {
+  font-weight: 400;
+}
+ul.errorlist li {
+  list-style-type: none;
+}

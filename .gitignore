@@ -1,0 +1,5 @@
+www/albatross/settings/secrets.py
+www/albatross/settings/__init__.py
+.idea
+__pycache__
+media

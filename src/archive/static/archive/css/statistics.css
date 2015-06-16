@@ -1,0 +1,29 @@
+.pie {
+  margin: 1em;
+  float: left;
+}
+.item {
+  font-size: smaller;
+  padding: 0.2em;
+}
+.map {
+  width: 100%;
+  height: 500px;
+  margin-bottom: 50px;
+}
+#languages,
+#hashtags,
+#mentions,
+#countries,
+#simple {
+  margin-bottom: 50px;
+}
+.jqvmap-zoomin, .jqvmap-zoomout {
+  box-sizing: content-box;
+}
+.grid-annotation line {
+  stroke: #dddddd;
+}
+.grid-annotation text {
+  font-size: 15pt;
+}
