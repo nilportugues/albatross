@@ -8,13 +8,14 @@ name = "pypi"
 [packages]
 
 celery = "==3.1.18"
-Django = "==1.8.5"
+django = "==1.8.5"
 django-allauth = "==0.21.0"
 django-extensions = "*"
 django-filter = "==0.11.0"
 django-jsonfield = "==0.9.15"
+django-redis = "*"
 djangorestframework = "==3.2.4"
-GitPython = "==1.0.1"
+gitpython = "==1.0.1"
 gunicorn = "*"
 ipython = "*"
 kombu = "==3.0.35"
@@ -25,6 +26,7 @@ tweepy = "==3.5.0"
 ujson = "*"
 numpy = "*"
 pycountry = "*"
+
 
 [dev-packages]
 
