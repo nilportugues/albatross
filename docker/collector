@@ -7,5 +7,4 @@ done
 
 sleep 5
 
-# Migrate on every start regardless
 /app/src/manage.py collector

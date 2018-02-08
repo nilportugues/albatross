@@ -68,7 +68,7 @@ urlpatterns += format_suffix_patterns([
         name="archives-detail"
     ),
     url(
-        r'^api/archives/(?P<pk>\d+)/distillation/(?P<kind>(cloud|map|statistics|images))$',
+        r'^api/archives/(?P<pk>\d+)/distillation/(?P<kind>(cloud|map|statistics|images))$',  # NOQA: E501
         cache_page(60 * 15)(ArchiveDistillationView.as_view()),
         name="archives-distillation"
     ),
