@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+import json
 import os
 
 from django import forms
@@ -164,6 +165,10 @@ LOGGING = {
 
 DEFAULT_FROM_EMAIL = '"TweetPile" <noreply@tweetpile.com>'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+__admins = os.getenv("ADMINS")
+if __admins:
+    ADMINS = json.loads(__admins)
 
 
 # Because Bootstrap equates `error` with `danger`

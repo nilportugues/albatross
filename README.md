@@ -14,6 +14,7 @@ Everything is dockerised, so you need:
 
     SECRET_KEY=<secret>
     DEBUG=true
+    ADMINS=[["Your Name", "your@email.address"]]
 
     TWITTER_CONSUMER_KEY=<secret>
     TWITTER_CONSUMER_SECRET=<secret>
