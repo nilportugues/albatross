@@ -198,7 +198,7 @@ class StatisticsParser(TweetParser):
 
     def _set_afinn_db(self):
         db = os.path.join(
-            settings.BASE_DIR, "..", "archive", "db", "sentiment.json")
+            settings.BASE_DIR, "archive", "db", "sentiment.json")
         with open(db) as f:
             self._afinn = ujson.load(f)
 

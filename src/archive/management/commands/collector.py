@@ -41,6 +41,9 @@ class Command(NotificationMixin, BaseCommand):
 
         self.socialapp = SocialApp.objects.get(pk=1)
 
+        os.makedirs(os.path.join(Archive.ARCHIVES_DIR, "raw"), exist_ok=True)
+        os.makedirs(os.path.join(Archive.ARCHIVES_DIR, "map"), exist_ok=True)
+
     def handle(self, *args, **options):
 
         self.verbosity = options.get("verbosity", self.verbosity)
