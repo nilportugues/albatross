@@ -7,35 +7,50 @@ services:
     image: rabbitmq:alpine
   redis:
     image: redis:alpine
+  setup:
+    build: ./
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+    volumes:
+      - .:/app
+    user: app
+    entrypoint: '/bin/sh /app/docker/setup'
   celery:
     build: ./
     depends_on:
       - postgres
       - rabbitmq
       - redis
+      - setup
     volumes:
       - .:/app
     user: app
     entrypoint: '/bin/sh /app/docker/celery'
+    stop_grace_period: 3m
   collector:
     build: ./
     depends_on:
       - postgres
       - rabbitmq
       - redis
-      - celery
+      - setup
     volumes:
       - .:/app
     user: app
     entrypoint: '/bin/sh /app/docker/collector'
+    stop_grace_period: 3m
   web:
     build: ./
     depends_on:
       - postgres
       - redis
+      - setup
     volumes:
       - .:/app
     ports:
       - '8000:8000'
     user: app
     entrypoint: '/bin/sh /app/docker/web'
+    stop_grace_period: 1s

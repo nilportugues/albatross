@@ -5,6 +5,4 @@ while ! echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres 
   sleep 1
 done
 
-sleep 5
-
 /app/src/manage.py collector

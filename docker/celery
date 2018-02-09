@@ -1,27 +1,9 @@
 #!/usr/bin/env bash
 
-while ! echo "SELECT 1" | psql -U postgres -h postgres >& /dev/null; do
+while ! echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres -h postgres 2> /dev/null | grep twitter; do
   echo "Waiting for PostgreSQL"
   sleep 1
 done
-
-# Migrate on every start regardless
-/app/src/manage.py migrate
-
-# Run the initialiser, which bails early if we're already setup
-if [[ ! $(echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres -h postgres | grep twitter) ]]; then
-
-  fixture="/tmp/fixture.json"
-
-  for line in $(grep TWITTER /app/.env); do
-    export ${line}
-  done
-
-  echo "[{\"model\": \"sites.site\", \"fields\": { \"domain\": \"example.com\", \"name\": \"example.com\"}, \"pk\": 1}, {\"model\": \"socialaccount.socialapp\", \"fields\": { \"provider\": \"twitter\", \"name\": \"Twitter\", \"client_id\": \"${TWITTER_CONSUMER_KEY}\", \"secret\": \"${TWITTER_CONSUMER_SECRET}\", \"key\": \"\", \"sites\": [1]}, \"pk\": 1}]" > ${fixture}
-
-  /app/src/manage.py loaddata ${fixture}
-
-fi
 
 celery -A albatross worker -l info --workdir=/app/src/
 

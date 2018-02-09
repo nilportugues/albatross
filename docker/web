@@ -5,8 +5,6 @@ while ! echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres 
   sleep 1
 done
 
-sleep 5
-
 if [[ "${ALBATROSS_IS_PRODUCTION}" = "1" ]]; then
   gunicorn --chdir=/app/src albatross.wsgi:application -c /app/src/albatross/gunicorn.py
 else
