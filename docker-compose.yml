@@ -1,12 +1,21 @@
 version: '2'
 
 services:
+
   postgres:
     image: postgres:alpine
+
   rabbitmq:
     image: rabbitmq:alpine
+
   redis:
     image: redis:alpine
+
+  #
+  # This is a temporary container initialised just to setup the database and
+  # pre-populate it with some default data.  It exits not long after it starts
+  # and can be manually removed afterward.
+  #
   setup:
     build: ./
     depends_on:
@@ -17,6 +26,11 @@ services:
       - .:/app
     user: app
     entrypoint: '/bin/sh /app/docker/setup'
+
+  #
+  # The async component.  This can (and probably should) be scaled up by the
+  # number of CPUs you have.
+  #
   celery:
     build: ./
     depends_on:
@@ -29,6 +43,11 @@ services:
     user: app
     entrypoint: '/bin/sh /app/docker/celery'
     stop_grace_period: 3m
+
+  #
+  # The part that talks to Twitter and pulls down the data.  It's
+  # multi-threaded, and I don't recommend scaling this.
+  #
   collector:
     build: ./
     depends_on:
@@ -41,6 +60,11 @@ services:
     user: app
     entrypoint: '/bin/sh /app/docker/collector'
     stop_grace_period: 3m
+
+  #
+  # The webserver interface.  Unless you're making this world-facing, you
+  # probably don't need to scale this.
+  #
   web:
     build: ./
     depends_on:
