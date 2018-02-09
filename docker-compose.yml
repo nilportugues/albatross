@@ -41,6 +41,7 @@ services:
     user: app
     entrypoint: '/bin/sh /app/docker/celery'
     stop_grace_period: 3m
+    restart: on-failure
 
   #
   # The part that talks to Twitter and pulls down the data.  It's
@@ -58,6 +59,7 @@ services:
     user: app
     entrypoint: '/bin/sh /app/docker/collector'
     stop_grace_period: 3m
+    restart: on-failure
 
   #
   # The webserver interface.  Unless you're making this world-facing, you
@@ -76,3 +78,4 @@ services:
     user: app
     entrypoint: '/bin/sh /app/docker/web'
     stop_grace_period: 1s
+    restart: on-failure
