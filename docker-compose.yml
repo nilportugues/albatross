@@ -20,8 +20,6 @@ services:
     build: ./
     depends_on:
       - postgres
-      - rabbitmq
-      - redis
     volumes:
       - .:/app
     user: app
