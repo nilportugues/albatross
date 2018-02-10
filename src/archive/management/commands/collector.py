@@ -1,23 +1,21 @@
 import os
-import pytz
 import signal
 import sys
 import time
 import traceback
-import tweepy
-
 from datetime import datetime
 
+import pytz
+import tweepy
+from allauth.socialaccount.models import SocialApp, SocialToken
 from django.core.management.base import BaseCommand
 from django.db.models.query_utils import Q
 
-from allauth.socialaccount.models import SocialApp, SocialToken
-
 from users.models import User
 
+from ...models import Archive
 from ..listeners import StreamArchiver
 from ..mixins import NotificationMixin
-from ...models import Archive
 
 
 class Command(NotificationMixin, BaseCommand):
