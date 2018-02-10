@@ -73,38 +73,9 @@ class Command(NotificationMixin, BaseCommand):
                 sys.stdout.write("[ DONE ]\n".format(user))
         sys.exit(0)
 
-    def _verbosity_check(self):
-
-        if not os.path.exists(self.VERBOSITY_FILE):
-            return
-
-        if not os.access(self.VERBOSITY_FILE, os.W_OK):
-            print("Verbosity change failure: permissions are wrong")
-            return
-
-        with open(self.VERBOSITY_FILE) as f:
-
-            try:
-                verbosity = int(f.read().strip())
-                if verbosity not in (1, 2, 3):
-                    raise ValueError
-            except ValueError:
-                print("Verbosity change failed.  Check that file.")
-                return
-
-            print("Setting listener verbosity to {}".format(verbosity))
-
-            self.verbosity = verbosity
-            for user in self.streams:
-                self.streams[user].listener.set_verbosity(self.verbosity)
-
-        os.unlink(self.VERBOSITY_FILE)
-
     def loop(self):
 
         while True:
-
-            self._verbosity_check()
 
             now = datetime.now(tz=pytz.UTC)
 
