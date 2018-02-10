@@ -26,24 +26,6 @@ services:
     entrypoint: '/bin/sh /app/docker/setup'
 
   #
-  # The async component.  This can (and probably should) be scaled up by the
-  # number of CPUs you have.
-  #
-  celery:
-    build: ./
-    depends_on:
-      - postgres
-      - rabbitmq
-      - redis
-      - setup
-    volumes:
-      - .:/app
-    user: app
-    entrypoint: '/bin/sh /app/docker/celery'
-    stop_grace_period: 3m
-    restart: on-failure
-
-  #
   # The part that talks to Twitter and pulls down the data.  It's
   # multi-threaded, and I don't recommend scaling this.
   #
@@ -58,7 +40,7 @@ services:
       - .:/app
     user: app
     entrypoint: '/bin/sh /app/docker/collector'
-    stop_grace_period: 3m
+    stop_grace_period: 1m
     restart: on-failure
 
   #
