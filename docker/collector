@@ -5,4 +5,10 @@ while ! echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres 
   sleep 1
 done
 
-/app/src/manage.py collector
+for line in $(grep VERBOSITY /app/.env); do
+  export ${line}
+done
+
+sleep 3
+
+/app/src/manage.py collector --verbosity ${VERBOSITY:-1}
