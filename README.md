@@ -15,6 +15,7 @@ Everything is dockerised, so you need:
     SECRET_KEY=<secret>
     DEBUG=true
     ADMINS=[["Your Name", "your@email.address"]]
+    VERBOSITY=3
 
     TWITTER_CONSUMER_KEY=<secret>
     TWITTER_CONSUMER_SECRET=<secret>
@@ -28,4 +29,10 @@ Just run `docker-compose up` and wait while it downloads all of the components
 and starts up the various containers.  When it's finished, you should be able
 to visit http://localhost:8000/ and then login with Twitter to start your
 first collection.
+
+## Architecture
+
+Here's what it's doing under the hood:
+
+![Architecture](docs/architecture.png)
 
