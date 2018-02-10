@@ -4,8 +4,6 @@ import re
 from datetime import datetime, timedelta
 
 from django import forms
-from django.conf import settings
-from django.core.mail import send_mail
 
 from users.models import User
 
@@ -96,18 +94,11 @@ class ArchiveForm(forms.Form):
         if duration:
             stop = start + timedelta(minutes=duration)
 
-        archive = Archive.objects.create(
+        Archive.objects.create(
             user=self._user,
             started=start,
             stopped=stop,
             query=query
-        )
-
-        self._sendmail(
-            "Tweetpile: New collection created: {}".format(query),
-            "So yeah, there's not much to write here.  I guess I'll just "
-            "include a link: http://www.tweetpile.com{}".format(
-                archive.get_absolute_url())
         )
 
     def add_css_class(self, field_name, css):
@@ -116,13 +107,3 @@ class ArchiveForm(forms.Form):
         self.fields[field_name].widget.attrs.update({
             "class": " ".join(classes).strip()
         })
-
-    @staticmethod
-    def _sendmail(subject, message):
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.ADMINS[0][1]],
-            fail_silently=True
-        )
