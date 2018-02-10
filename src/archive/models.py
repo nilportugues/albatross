@@ -119,5 +119,5 @@ class Tweet(models.Model):
     mentions = ArrayField(
         models.CharField(max_length=64), blank=True, null=True)
     hashtags = ArrayField(
-        models.CharField(max_length=140), blank=True, null=True)
+        models.CharField(max_length=280), blank=True, null=True)
     text = models.CharField(max_length=256, db_index=True)
