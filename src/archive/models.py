@@ -108,10 +108,10 @@ class Event(models.Model):
 class Tweet(models.Model):
     """
     Created for the purpose of allowing searches of specific collections.  This
-    is probably not a good idea and it's yet to be used, since large collections
-    tend to produce Very Large Databases.  If we're going to have search,
-    something like ElasticSearch makes more sense, but until that's figured out,
-    this will stick around.
+    is probably not a good idea and it's yet to be used, since large
+    collections tend to produce Very Large Databases.  If we're going to have
+    search, something like ElasticSearch makes more sense, but until that's
+    figured out, this will stick around.
     """
     id = models.BigIntegerField(primary_key=True)
     archive = models.ForeignKey("archive.Archive", related_name="tweets")
