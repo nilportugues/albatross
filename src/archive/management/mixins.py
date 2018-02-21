@@ -1,7 +1,8 @@
 class NotificationMixin(object):
 
-    @staticmethod
-    def _alert(subject, message, additional=""):
+    BAR = "==================================================================="
+
+    def _alert(self, subject, message, additional=""):
 
         if isinstance(message, Exception):
             import traceback
@@ -10,3 +11,4 @@ class NotificationMixin(object):
 
         message = "{}\n\nAdditional message:\n\n{}".format(message, additional)
 
+        print(f"{self.BAR}\n{subject}\n{message}\n{self.BAR}")

@@ -86,33 +86,25 @@ class ArchiveSubsetView(APIView):
         archive = get_object_or_404(Archive, pk=kwargs.get("pk"))
 
         r = []
-        with bz2.open(archive.get_tweets_path()) as f:
+        for tweet_string in archive.get_tweets():
+
+            skip = False
 
             try:
+                tweet = json.loads(tweet_string)
+            except ValueError:
+                continue  # If we can't decode the tweet, we move on
 
-                for line in f:
+            for required in required_fields:
+                if required not in tweet or not tweet[required]:
+                    skip = True
 
-                    skip = False
+            if skip:
+                continue
 
-                    try:
-                        tweet = json.loads(str(line.strip(), "UTF-8"))
-                    except ValueError:
-                        continue  # If we can't decode the tweet, we move on
-
-                    for required in required_fields:
-                        if required not in tweet or not tweet[required]:
-                            skip = True
-
-                    if skip:
-                        continue
-
-                    r.append(
-                        [self.get_parsed_attribute(tweet, f) for f in keys]
-                    )
-
-            # Exit the read in the event that the archive isn't finished writing
-            except EOFError:
-                pass
+            r.append(
+                [self.get_parsed_attribute(tweet, f) for f in keys]
+            )
 
         return Response(r)
 
