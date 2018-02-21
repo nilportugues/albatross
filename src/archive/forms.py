@@ -5,8 +5,6 @@ from datetime import datetime, timedelta
 
 from django import forms
 
-from users.models import User
-
 from .models import Archive
 
 from django.forms.utils import ErrorList
@@ -22,12 +20,28 @@ class ArchiveForm(forms.Form):
 
     CONCURRENCY_LIMIT = 1
 
-    start = forms.DateTimeField(required=False)
-    duration = forms.TypedChoiceField(choices=[], coerce=int, initial=60)
     query = forms.CharField(min_length=4, max_length=32)
+    start = forms.DateTimeField(required=False)
+    duration = forms.TypedChoiceField(
+        choices=(
+            (30, "30m"),
+            (60, "1h"),
+            (180, "3h"),
+            (360, "6h"),
+            (720, "12h"),
+            (1440, "24h"),
+            (2880, "48h"),
+            (4320, "72h"),
+            (10080, "7d"),
+            (20160, "14d"),
+            (525600, "30d"),
+            (0, "∞"),
+        ),
+        coerce=int,
+        initial=60
+    )
 
-    ANTI_PUNCTUATION_REGEX = re.compile(
-        '"|\[|\]|\{|\}|:|;|,|\.|/|<|>|\?|!|@|\$|%|\^|&|\*|\(|\)|-|=|\+|…|\'')
+    ANTI_PUNCTUATION_REGEX = re.compile('["\[\]{\}:;,./<>?!@$%^&*()-=+…\']')
 
     def __init__(self, user, *args, **kwargs):
 
@@ -48,13 +62,6 @@ class ArchiveForm(forms.Form):
             "placeholder": "The default is right now"
         })
 
-        durations = []
-        if user.is_authenticated():
-            for t, name in User.DURATIONS:
-                if t in user.durations_available:
-                    durations.append((t, name))
-        self.fields["duration"].choices = durations
-
     def clean_query(self):
 
         query = self.cleaned_data.get("query")
@@ -70,19 +77,6 @@ class ArchiveForm(forms.Form):
         if start and start < now:
             raise forms.ValidationError("The start time must be in the future")
         return start or now
-
-    def clean(self):
-
-        currently_running = self._user.archives.filter(is_running=True).count()
-        if not self._user.is_staff:
-            if currently_running > self.CONCURRENCY_LIMIT:
-                raise forms.ValidationError(
-                    "Sorry, we currently only allow one collection at a time.  "
-                    "You'll have to stop your other collection if you want to "
-                    "start another."
-                )
-
-        return self.cleaned_data
 
     def save(self, *args, **kwargs):
 
