@@ -47,7 +47,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigIntegerField(serialize=False, primary_key=True)),
                 ('created', models.DateTimeField(db_index=True)),
                 ('mentions', django.contrib.postgres.fields.ArrayField(blank=True, null=True, base_field=models.CharField(max_length=64), size=None)),
-                ('hashtags', django.contrib.postgres.fields.ArrayField(blank=True, null=True, base_field=models.CharField(max_length=140), size=None)),
+                ('hashtags', django.contrib.postgres.fields.ArrayField(blank=True, null=True, base_field=models.CharField(max_length=280), size=None)),
                 ('text', models.CharField(max_length=256, db_index=True)),
                 ('archive', models.ForeignKey(related_name='tweets', to='archive.Archive')),
             ],

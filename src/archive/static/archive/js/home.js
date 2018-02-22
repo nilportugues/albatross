@@ -193,7 +193,7 @@ var Home = function(albatross, user_id){
       .find("button.active")
       .attr("data-filter");
 
-    if (possession == "*" && statuses == "*") {
+    if (possession === "*" && statuses === "*") {
       return "*";
     }
     return possession + statuses;

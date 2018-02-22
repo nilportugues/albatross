@@ -1,7 +1,9 @@
 import datetime
+import glob
+import lzma
 import os
-import pytz
 
+import pytz
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -63,21 +65,38 @@ class Archive(models.Model):
     def __str__(self):
         return self.query
 
-    def get_tweets_path(self):
+    def calculate_size(self):
+        path = os.path.join(self.ARCHIVES_DIR, "raw", f"{self.pk:05}*fjson.xz")
+        return sum([os.stat(f).st_size for f in glob.glob(path)])
+
+    def get_raw_path(self, suffix=None):
+        suffix = f"-{suffix}" if suffix else ""
         return os.path.join(
-            self.ARCHIVES_DIR, "raw", "{:05}.fjson.bz2".format(self.pk))
+            self.ARCHIVES_DIR, "raw", f"{self.pk:09}{suffix}.fjson.xz")
+
+    def get_tweets(self):
+        """
+        Collect all tweets from all compressed files and give us a generator
+        yielding one tweet per iteration.
+        """
+        path = os.path.join(self.ARCHIVES_DIR, "raw", f"{self.pk:09}*fjson.xz")
+        for p in sorted(glob.glob(path)):
+            with lzma.open(p) as f:
+                for line in f:
+                    yield str(line.strip(), "UTF-8")
 
     def get_tweets_url(self):
-        return os.path.join(
-            self.ARCHIVES_URL, "raw", "{:05}.fjson.bz2".format(self.pk))
+        if not os.path.exists(self.get_raw_path()):
+            return None
+        return os.path.join(self.ARCHIVES_URL, "raw", f"{self.pk:09}.fjson.xz")
 
     def get_map_path(self):
         return os.path.join(
-            self.ARCHIVES_DIR, "map", "{:05}.json.bz2".format(self.pk))
+            self.ARCHIVES_DIR, "map", f"{self.pk:09}.json.bz2")
 
     def get_map_url(self):
         return os.path.join(
-            self.ARCHIVES_URL, "map", "{:05}.json.bz2".format(self.pk))
+            self.ARCHIVES_URL, "map", f"{self.pk:09}.json.bz2")
 
     def get_absolute_url(self):
         return "/archives/{}/statistics/".format(self.pk)
@@ -108,10 +127,10 @@ class Event(models.Model):
 class Tweet(models.Model):
     """
     Created for the purpose of allowing searches of specific collections.  This
-    is probably not a good idea and it's yet to be used, since large collections
-    tend to produce Very Large Databases.  If we're going to have search,
-    something like ElasticSearch makes more sense, but until that's figured out,
-    this will stick around.
+    is probably not a good idea and it's yet to be used, since large
+    collections tend to produce Very Large Databases.  If we're going to have
+    search, something like ElasticSearch makes more sense, but until that's
+    figured out, this will stick around.
     """
     id = models.BigIntegerField(primary_key=True)
     archive = models.ForeignKey("archive.Archive", related_name="tweets")
@@ -119,5 +138,5 @@ class Tweet(models.Model):
     mentions = ArrayField(
         models.CharField(max_length=64), blank=True, null=True)
     hashtags = ArrayField(
-        models.CharField(max_length=140), blank=True, null=True)
+        models.CharField(max_length=280), blank=True, null=True)
     text = models.CharField(max_length=256, db_index=True)

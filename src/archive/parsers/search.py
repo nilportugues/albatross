@@ -6,7 +6,7 @@ from django.db import IntegrityError
 from ..models import Tweet
 
 
-class SearchParser(object):
+class SearchParser:
 
     def collect(self, tweet):
         try:

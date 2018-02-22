@@ -1,8 +1,0 @@
-#!/usr/bin/env sh
-
-while ! echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres -h postgres 2> /dev/null | grep twitter; do
-  echo "Waiting for PostgreSQL"
-  sleep 1
-done
-
-/app/src/manage.py collector

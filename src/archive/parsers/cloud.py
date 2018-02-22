@@ -13,32 +13,29 @@ class CloudParser(TweetParser):
     BUCKETS = 300
     BUCKET_SIZES = range(10, 310)
 
-    ANTI_PUNCTUATION_REGEX = re.compile(
-        '"|\[|\]|\{|\}|:|;|,|\.|/|<|>|\?|!|@|#|\$|%|\^|&|\*|\(|\)|\-|=|\+|…|\'|'
-        '\d*'
-    )
+    ANTI_PUNCTUATION_REGEX = re.compile('["\[\]{}:;,./<>?!@#$%^&*()\-=+…\'\d]')
 
     STOP_WORDS = {
         "*": [
             "rt", "de", "the",
         ],
         "en": [
-            "and", "or", "you", "a", "to", "be", "by", "on", "from", "is", "at",
-            "it", "its", "it's", "it’s", "of", "–", "|", "but", "do", "so",
-            "for", "not", "the", "in", "are", "will", "this", "as", "that",
-            "with", "an", "than", "amp", "that's",
+            "and", "or", "you", "a", "to", "be", "by", "on", "from", "is",
+            "at", "it", "its", "it's", "it’s", "of", "–", "|", "but", "do",
+            "so", "for", "not", "the", "in", "are", "will", "this", "as",
+            "that", "with", "an", "than", "amp", "that's",
         ],
         "el": [
             "και", "αν", "τον", "τα", "την", "τη", "το", "είναι", "ο", "ότι",
-            "του", "σε", "θα", "δεν", "για", "που", "οι", "να", "ή", "η", "στο",
-            "με", "ωστε", "μου", "τι", "αυτο", "αυτό", "στις", "τις", "κι",
-            "απο", "τους", "αλλά", "αλλα", "από", "της", "στην", "ειναι", "σας",
-            "μετά", "ακόμα", "ακόμη", "πως", "των", "ήδη", "οτι", "μην",
+            "του", "σε", "θα", "δεν", "για", "που", "οι", "να", "ή", "η",
+            "στο", "με", "ωστε", "μου", "τι", "αυτο", "αυτό", "στις", "τις",
+            "κι", "απο", "τους", "αλλά", "αλλα", "από", "της", "στην", "ειναι",
+            "σας", "μετά", "ακόμα", "ακόμη", "πως", "των", "ήδη", "οτι", "μην",
         ],
         "nl": [
-            "de", "het", "voor", "en", "naar", "met", "dit", "is", "die", "ook",
-            "te", "bij", "zo", "om", "wat", "op", "van", "in", "ik", "dat",
-            "er", "aan", "tot", "een",
+            "de", "het", "voor", "en", "naar", "met", "dit", "is", "die",
+            "ook", "te", "bij", "zo", "om", "wat", "op", "van", "in", "ik",
+            "dat", "er", "aan", "tot", "een",
         ]
     }
 
@@ -60,7 +57,8 @@ class CloudParser(TweetParser):
             return "[]"
 
         # Sort and reduce the index
-        index = sorted(self.index.items(), key=lambda _: _[1], reverse=True)[1:500]
+        index = sorted(
+            self.index.items(), key=lambda _: _[1], reverse=True)[1:500]
 
         frequency_max = index[0][1]
         frequency_min = index[-1][1]
@@ -68,9 +66,10 @@ class CloudParser(TweetParser):
 
         r = []
         for word, total in index:
+            bucket = int((total - frequency_min) / bucket_size)
             r.append({
                 "text": word,
-                "size": self.BUCKET_SIZES[int((total - frequency_min) / bucket_size)]
+                "size": self.BUCKET_SIZES[bucket]
             })
 
         return bytes(json.dumps(r, separators=(",", ":")), "UTF-8")

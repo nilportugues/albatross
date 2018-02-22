@@ -4,10 +4,6 @@ import re
 from datetime import datetime, timedelta
 
 from django import forms
-from django.conf import settings
-from django.core.mail import send_mail
-
-from users.models import User
 
 from .models import Archive
 
@@ -24,12 +20,28 @@ class ArchiveForm(forms.Form):
 
     CONCURRENCY_LIMIT = 1
 
-    start = forms.DateTimeField(required=False)
-    duration = forms.TypedChoiceField(choices=[], coerce=int, initial=60)
     query = forms.CharField(min_length=4, max_length=32)
+    start = forms.DateTimeField(required=False)
+    duration = forms.TypedChoiceField(
+        choices=(
+            (30, "30m"),
+            (60, "1h"),
+            (180, "3h"),
+            (360, "6h"),
+            (720, "12h"),
+            (1440, "24h"),
+            (2880, "48h"),
+            (4320, "72h"),
+            (10080, "7d"),
+            (20160, "14d"),
+            (525600, "30d"),
+            (0, "∞"),
+        ),
+        coerce=int,
+        initial=60
+    )
 
-    ANTI_PUNCTUATION_REGEX = re.compile(
-        '"|\[|\]|\{|\}|:|;|,|\.|/|<|>|\?|!|@|\$|%|\^|&|\*|\(|\)|-|=|\+|…|\'')
+    ANTI_PUNCTUATION_REGEX = re.compile('["\[\]{\}:;,./<>?!@$%^&*()-=+…\']')
 
     def __init__(self, user, *args, **kwargs):
 
@@ -50,13 +62,6 @@ class ArchiveForm(forms.Form):
             "placeholder": "The default is right now"
         })
 
-        durations = []
-        if user.is_authenticated():
-            for t, name in User.DURATIONS:
-                if t in user.durations_available:
-                    durations.append((t, name))
-        self.fields["duration"].choices = durations
-
     def clean_query(self):
 
         query = self.cleaned_data.get("query")
@@ -73,19 +78,6 @@ class ArchiveForm(forms.Form):
             raise forms.ValidationError("The start time must be in the future")
         return start or now
 
-    def clean(self):
-
-        currently_running = self._user.archives.filter(is_running=True).count()
-        if not self._user.is_staff:
-            if currently_running > self.CONCURRENCY_LIMIT:
-                raise forms.ValidationError(
-                    "Sorry, we currently only allow one collection at a time.  "
-                    "You'll have to stop your other collection if you want to "
-                    "start another."
-                )
-
-        return self.cleaned_data
-
     def save(self, *args, **kwargs):
 
         query = self.cleaned_data.get("query")
@@ -96,18 +88,11 @@ class ArchiveForm(forms.Form):
         if duration:
             stop = start + timedelta(minutes=duration)
 
-        archive = Archive.objects.create(
+        Archive.objects.create(
             user=self._user,
             started=start,
             stopped=stop,
             query=query
-        )
-
-        self._sendmail(
-            "Tweetpile: New collection created: {}".format(query),
-            "So yeah, there's not much to write here.  I guess I'll just "
-            "include a link: http://www.tweetpile.com{}".format(
-                archive.get_absolute_url())
         )
 
     def add_css_class(self, field_name, css):
@@ -116,13 +101,3 @@ class ArchiveForm(forms.Form):
         self.fields[field_name].widget.attrs.update({
             "class": " ".join(classes).strip()
         })
-
-    @staticmethod
-    def _sendmail(subject, message):
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.ADMINS[0][1]],
-            fail_silently=True
-        )

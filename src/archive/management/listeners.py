@@ -1,22 +1,22 @@
-from sys import stdout, stderr
+from sys import stderr, stdout
 from time import sleep
+
+from django.conf import settings
 from kombu import Connection
 from tweepy import StreamListener
 
-from django.conf import settings
-
 from users.models import User
 
+from ..models import Archive
 from .consumers import ArchiveConsumer
 from .mixins import NotificationMixin
-from ..models import Archive
 
 
 class StreamArchiver(NotificationMixin, StreamListener):
 
     def __init__(self, archives, verbosity=1, *args, **kwargs):
 
-        StreamListener.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         # A temporary storage for use in exception forensics
         self.raw_data = None
@@ -65,7 +65,7 @@ class StreamArchiver(NotificationMixin, StreamListener):
                 if query in status.retweeted_status.text.lower():
                     queue.put(status._json)
                 elif hasattr(status.retweeted_status, "quoted_status"):
-                    if query in status.retweeted_status.quoted_status["text"].lower():
+                    if query in status.retweeted_status.quoted_status["text"].lower():  # NOQA: E501
                         queue.put(status._json)
             elif hasattr(status, "quoted_status"):
                 if query in status.quoted_status["text"].lower():
@@ -89,7 +89,10 @@ class StreamArchiver(NotificationMixin, StreamListener):
 
         message = str(status_code)
         if status_code == 401:
-            message = "Twitter issued a 401 for {}, so they've been kicked.".format(self.user)
+            message = (
+                f"Twitter issued a 401 for {self.user}, so they've been "
+                f"kicked."
+            )
             self.user.status = User.STATUS_DISABLED
             self.user.save(update_fields=("status",))
 

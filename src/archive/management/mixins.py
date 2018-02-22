@@ -1,11 +1,8 @@
-from django.conf import settings
-from django.core.mail import send_mail
-
-
 class NotificationMixin(object):
 
-    @staticmethod
-    def _alert(subject, message, additional=""):
+    BAR = "==================================================================="
+
+    def _alert(self, subject, message, additional=""):
 
         if isinstance(message, Exception):
             import traceback
@@ -14,9 +11,4 @@ class NotificationMixin(object):
 
         message = "{}\n\nAdditional message:\n\n{}".format(message, additional)
 
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            [settings.ADMINS[0][1]]
-        )
+        print(f"{self.BAR}\n{subject}\n{message}\n{self.BAR}")

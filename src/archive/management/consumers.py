@@ -1,32 +1,29 @@
-from bz2 import open as bz2_open
-from datetime import datetime
-from json import dumps as json_dumps
-from os import stat
-from pytz import UTC
 from sys import stdout
 from threading import Thread
 
 from django.utils import timezone
-
 from kombu import Queue
 from kombu.mixins import ConsumerMixin
 
+import ujson as json
+from .mixins import NotificationMixin
 from ..parsers import (
-    CloudParser, ImagesParser, MapParser, SearchParser, StatisticsParser)
+    CloudParser,
+    ImagesParser,
+    MapParser,
+    RawParser,
+    SearchParser,
+    StatisticsParser
+)
 
-try:
-    import ujson as json
-except ImportError:
-    import json
 
+class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
 
-class ArchiveConsumer(ConsumerMixin, Thread):
-
-    DISTILLATION_WINDOW = 60 * 5  # How long to wait between distillations
+    DISTILLATION_WINDOW = 60 * 5  # Seconds wait between distillations
 
     def __init__(self, archive, connection, verbosity=1, *args, **kwargs):
 
-        Thread.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.verbosity = verbosity
         self.connection = connection
@@ -34,8 +31,7 @@ class ArchiveConsumer(ConsumerMixin, Thread):
 
         self.aggregates = {}
 
-        self.raw_data = None
-
+        self.raw = None
         self.cloud = None
         self.images = None
         self.map = None
@@ -47,27 +43,37 @@ class ArchiveConsumer(ConsumerMixin, Thread):
 
     def set_verbosity(self, verbosity):
         print("Setting {} consumer verbosity to {}".format(
-            self.archive, verbosity))
+            self.archive,
+            verbosity
+        ))
         self.verbosity = verbosity
 
     def start(self):
 
         self.is_stopped = False
 
-        self.raw_data = bz2_open(self.archive.get_tweets_path(), "a")
-
+        self.raw = RawParser(self.archive)
         self.cloud = CloudParser(self.archive)
         self.images = ImagesParser()
         self.map = MapParser(self.archive)
         self.search = SearchParser()
         self.statistics = StatisticsParser(self.archive)
 
-        self.last_distilled = datetime.now(tz=UTC)
+        self.last_distilled = timezone.now()
 
-        Thread.start(self)
+        super().start()
 
         if self.verbosity > 0:
             print("Consumer started for archive #{}".format(self.archive.pk))
+
+    def run(self, _tokens=1):
+        try:
+            super().run(_tokens=_tokens)
+        except Exception as e:
+            self._alert(
+                "An error occurred whilst running the archive consumer",
+                e
+            )
 
     def get_consumers(self, consumer_class, channel):
 
@@ -75,22 +81,24 @@ class ArchiveConsumer(ConsumerMixin, Thread):
             return []
 
         return [consumer_class(
-            Queue("archiver:{}".format(self.archive.pk)),
-            callbacks=[self.on_message],
+            Queue(f"archiver:{self.archive.pk}"),
+            callbacks=[self.callback],
             accept=["json"]
         )]
 
-    def on_message(self, tweet, message):
+    def callback(self, tweet, message):
+        try:
+            self._process_message(tweet, message)
+        except Exception as e:
+            self._alert("An error occurred whilst processing a message", e)
 
-        timer = datetime.now()
+    def _process_message(self, tweet, message):
+
+        timer = timezone.now()
 
         self.archive.total += 1
 
-        # Remember: it won't write in real-time because of the buffer, so the
-        # file size won't change for blocks at a time.
-        self.raw_data.write(bytes(json_dumps(
-            tweet, ensure_ascii=False, separators=(",", ":")) + "\n", "UTF-8"))
-
+        self.raw.collect(tweet)
         self.cloud.collect(tweet)
         self.images.collect(tweet)
         self.statistics.collect(tweet)
@@ -103,9 +111,14 @@ class ArchiveConsumer(ConsumerMixin, Thread):
         message.ack()
 
         now = timezone.now()
+
         if self.verbosity > 2:
-            print("{}: {} Message processed: {}".format(
-                self.archive, now, now - timer))
+            print("{} ({}): {} processed in {}s".format(
+                self.archive.query,
+                self.archive.total,
+                now,
+                (now - timer).total_seconds()
+            ))
 
         window = self.DISTILLATION_WINDOW
         if (now - self.last_distilled).total_seconds() > window:
@@ -129,11 +142,10 @@ class ArchiveConsumer(ConsumerMixin, Thread):
                 self.archive.pk
             ))
 
-        self.raw_data.close()
-        self._write_distillations(rate_limit=False)
+        self._write_distillations()
         self.is_stopped = True
 
-    def _write_distillations(self, rate_limit=True):
+    def _write_distillations(self):
 
         now = timezone.now()
 
@@ -141,6 +153,7 @@ class ArchiveConsumer(ConsumerMixin, Thread):
             print("Writing aggregates for {}".format(self.archive))
 
         self.last_distilled = now
+        self.raw.generate()
         self.map.generate()
         self.archive.cloud = self.cloud.generate()
         self.archive.cloud_generated = now
@@ -149,7 +162,7 @@ class ArchiveConsumer(ConsumerMixin, Thread):
         self.archive.images = self.images.generate()
         self.archive.images_generated = now
         self.archive.total = self.statistics.aggregate["total"]
-        self.archive.size = stat(self.archive.get_tweets_path()).st_size
+        self.archive.size = self.archive.calculate_size()
         self.archive.save(update_fields=(
             "cloud", "cloud_generated",
             "images", "images_generated",
@@ -170,16 +183,12 @@ class ArchiveConsumer(ConsumerMixin, Thread):
 
         last_tweet_time = ""
         self.archive.total = 0
-        with bz2_open(self.archive.get_tweets_path()) as f:
-            try:
-                for line in f:
-                    if self.should_stop:
-                        if self.verbosity > 1:
-                            print("Stopping aggregate compilation for {}".format(self.archive))
-                        return
-                    last_tweet_time = self._parse_line(line)
-            except (EOFError, OSError):
-                pass  # This happens when the file is partially written to.
+        for line in self.archive.get_tweets():
+            if self.should_stop:
+                if self.verbosity > 1:
+                    print(f"Stopping aggregate compilation for {self.archive}")
+                return
+            last_tweet_time = self._parse_line(line)
 
         self.archive.total = self.statistics.aggregate["total"]
 
@@ -199,7 +208,7 @@ class ArchiveConsumer(ConsumerMixin, Thread):
         last_tweet_time = ""
 
         try:
-            tweet = json.loads(str(line.strip(), "UTF-8"))
+            tweet = json.loads(line)
             last_tweet_time = tweet.get("created_at")
         except ValueError:
             pass  # If the line is corrupted, we have to ignore it.

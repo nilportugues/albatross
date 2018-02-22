@@ -1,13 +1,13 @@
-class TweetParser(object):
+class TweetParser:
 
     @classmethod
     def get_complete_text(cls, tweet):
         """
-        Twitter likes to strictly define `text` as 140characters, which means
-        that if a tweet is retweeted or quoted, the text of the tweet is mangled
-        to contain things like a prefixed `RT ` and a suffixed `...`.  This is
-        how we can always be sure we get the actual text of the tweet in
-        question.
+        Twitter likes to strictly define `text` as 280characters, which means
+        that if a tweet is retweeted or quoted, the text of the tweet is
+        mangled to contain things like a prefixed `RT ` and a suffixed `...`.
+        This is how we can always be sure we get the actual text of the tweet
+        in question.
         """
 
         if "retweeted_status" in tweet:
@@ -61,3 +61,9 @@ class TweetParser(object):
             tweet["user"]["screen_name"],
             tweet["id"]
         )
+
+    def collect(self, tweet):
+        raise NotImplementedError("Must be defined by subclass")
+
+    def generate(self):
+        raise NotImplementedError("Must be defined by subclass")

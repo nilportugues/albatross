@@ -103,7 +103,7 @@ class StatisticsParser(TweetParser):
         return bytes(json.dumps({
             "makeup": [
                 ["Retweets", self.aggregate["makeup"]["Retweets"]],
-                ["Original Content", self.aggregate["total"] - self.aggregate["makeup"]["Retweets"] - self.aggregate["makeup"]["Replies"]],
+                ["Original Content", self.aggregate["total"] - self.aggregate["makeup"]["Retweets"] - self.aggregate["makeup"]["Replies"]],  # NOQA: E501
                 ["Replies", self.aggregate["makeup"]["Replies"]]
             ],
             "languages": self._simplify_statistic(
@@ -126,7 +126,7 @@ class StatisticsParser(TweetParser):
             "hashtags": self._simplify_statistic(self.aggregate["hashtags"]),
             "hours": self._hour_ranges(self.aggregate["hours"]),
             "mentions": self._simplify_statistic(self.aggregate["mentions"]),
-            "retweetees": self._simplify_statistic(self.aggregate["retweetees"]),
+            "retweetees": self._simplify_statistic(self.aggregate["retweetees"]),  # NOQA: E501
             "total": self.aggregate["total"],
             "sentiments": list(self.aggregate["sentiments"].items())
         }, separators=(",", ":")), "UTF-8")

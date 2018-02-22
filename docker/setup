@@ -11,6 +11,8 @@ done
 # Run the initialiser, which bails early if we're already setup
 if [[ ! $(echo "SELECT * FROM socialaccount_socialapp LIMIT 1" | psql -U postgres -h postgres | grep twitter) ]]; then
 
+  echo "Installing fixtures"
+
   fixture="/tmp/fixture.json"
 
   for line in $(grep TWITTER /app/.env); do
