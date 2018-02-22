@@ -9,7 +9,9 @@ import pytz
 import tweepy
 from allauth.socialaccount.models import SocialApp, SocialToken
 from django.core.management.base import BaseCommand
+from django.db import connections
 from django.db.models.query_utils import Q
+from django.db.utils import OperationalError, ProgrammingError
 
 from users.models import User
 
@@ -31,11 +33,14 @@ class Command(NotificationMixin, BaseCommand):
     VERBOSITY_FILE = "/tmp/tweetpile-collector.verbosity"
 
     def __init__(self):
+
         BaseCommand.__init__(self)
         self.tracking = []
         self.streams = {}
         self.first_pass_completed = False
         self.verbosity = 1
+
+        self._wait_for_db()
 
         self.socialapp = SocialApp.objects.get(pk=1)
 
@@ -60,15 +65,19 @@ class Command(NotificationMixin, BaseCommand):
             self.exit()
 
     def exit(self, *args):
+
         if self.verbosity > 0:
             sys.stdout.write("Exiting\n")
+
         for user, stream in self.streams.items():
             if self.verbosity > 1:
-                sys.stdout.write("  Killing stream for {}: ".format(user))
+                sys.stdout.write(f"  Killing stream for {user}: ")
             stream.disconnect()
             stream.listener.close_log()
             if self.verbosity > 1:
-                sys.stdout.write("[ DONE ]\n".format(user))
+                sys.stdout.write("[ DONE ]\n")
+
+        sys.stdout.write("Exiting gracefully")
         sys.exit(0)
 
     def loop(self):
@@ -208,3 +217,12 @@ class Command(NotificationMixin, BaseCommand):
         auth.set_access_token(access["key"], access["secret"])
 
         return tweepy.API(auth)
+
+    def _wait_for_db(self):
+        try:
+            print("Looking for the database...")
+            connections["default"].cursor().execute(
+                f"SELECT count(*) FROM {SocialApp._meta.db_table}")
+        except (OperationalError, ProgrammingError):
+            time.sleep(1)
+            self._wait_for_db()
