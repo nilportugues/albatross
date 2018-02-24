@@ -1,29 +1,28 @@
-## Villains
+# Villains
 
 * Apocalypse (Marvel)
-* The Borg (Star Trek)
-* Cock Knocker (Jay & Silent Bob Strike Back)
+* Bellatrix (Harry Potter)
+* Cersei Baratheon (Game of Thrones)
 * Darth Vader (Star Wars)
-* Edward Nygma
+* Emma Frost (Marvel)
 * First (Buffy the Vampire Slayer)
 * Glorificus (Buffy the Vampire Slayer)
-* Hydra (Marvel)
+* Harley Quinn (DC)
 * Iago (Shakespeare)
 * Joker (DC)
-* Krang (TMNT)
+* Kai Winn (Star Trek)
 * Lamia (Stardust)
 * Moriarty (Sherlock Holmes)
-* Norman Bates
+* Nebula (Guardians of the Galaxy)
 * O'Brien (1984)
 * Peacekeepers (Farscape)
-* Quirrel (Harry Potter)
+* Queen of Hearts (Alice in Wonderland)
 * Reavers (Firefly)
 * Scorpius (Farscape)
 * Todd Ingram (Scott Pilgrim)
 * Ultron (Marvel)
 * Voldemort (Harry Potter)
 * Wolfram & Hart (Angel)
-* Xerxes (300)
-* Y
-* General Zod (DC)
-
+* Xenomorph (Alien)
+* Yubaba (Spirited Away)
+* Zod (DC)
