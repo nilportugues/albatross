@@ -22,7 +22,7 @@ class ContactForm(BootstrapMixin, forms.Form):
     )
 
     department = forms.ChoiceField(
-        DEPARTMENTS,
+        choices=DEPARTMENTS,
         initial=DEPARTMENT_GENERAL,
         widget=forms.widgets.HiddenInput
     )

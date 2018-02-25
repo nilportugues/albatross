@@ -66,7 +66,7 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
         if self.verbosity > 0:
             print("Consumer started for archive #{}".format(self.archive.pk))
 
-    def run(self, _tokens=1):
+    def run(self, _tokens=1, **kwargs):
         try:
             super().run(_tokens=_tokens)
         except Exception as e:

@@ -5,16 +5,9 @@
 {% endif %}
 <li class="{{ navigation.about }}"><a href="{% url 'about' %}">About</a></li>
 <li class="{{ navigation.contact }}"><a href="{% url 'contact' %}">Contact</a></li>
-{#<li class="{{ navigation.pricing }}"><a href="{% url 'pricing' %}">Pricing</a></li>#}
 {% if not user.is_authenticated %}
   <li>
-    {% for provider in socialaccount.providers %}
-      <a
-        title="Log in with {{ provider.name }}"
-        class="socialaccount_provider {{ provider.id }}"
-        href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"
-      >Login <i class="fa fa-fw fa-twitter"></i></a>
-    {% endfor %}
+		<a title="Log in with Twitter" class="btn btn-info" href="{% provider_login_url 'twitter' %}">Log In <i class="fa fa-fw fa-twitter"></i></a>
   </li>
 {% elif user.is_staff %}
   <li><a href="{% url 'admin:index' %}">Administration</a></li>

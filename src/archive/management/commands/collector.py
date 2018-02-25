@@ -22,8 +22,8 @@ from ..mixins import NotificationMixin
 
 class Command(NotificationMixin, BaseCommand):
     """
-    Loop forever checking the db for when to start/stop an archive.  New streams
-    are stored in self.streams, keyed by the user owning the stream.
+    Loop forever checking the db for when to start/stop an archive.  New
+    streams are stored in self.streams, keyed by the user owning the stream.
     """
 
     LOOP_TIME = 1
@@ -67,7 +67,7 @@ class Command(NotificationMixin, BaseCommand):
     def exit(self, *args):
 
         if self.verbosity > 0:
-            sys.stdout.write("Exiting\n")
+            sys.stdout.write(f"Exit called with {args}\n")
 
         for user, stream in self.streams.items():
             if self.verbosity > 1:
@@ -77,7 +77,7 @@ class Command(NotificationMixin, BaseCommand):
             if self.verbosity > 1:
                 sys.stdout.write("[ DONE ]\n")
 
-        sys.stdout.write("Exiting gracefully")
+        sys.stdout.write("Exiting gracefully\n")
         sys.exit(0)
 
     def loop(self):
@@ -162,8 +162,8 @@ class Command(NotificationMixin, BaseCommand):
         """
         If the archiver is killed unexpectedly, we need to account for the
         special case of its "first pass", where we need to re-start should-be
-        ongoing archivals.  We also call ._handle_restarts() here to capture the
-        special case where the stream was killed for whatever reason.
+        ongoing archivals.  We also call ._handle_restarts() here to capture
+        the special case where the stream was killed for whatever reason.
         """
 
         r = Archive.objects\
@@ -220,9 +220,11 @@ class Command(NotificationMixin, BaseCommand):
 
     def _wait_for_db(self):
         try:
-            print("Looking for the database...")
-            connections["default"].cursor().execute(
-                f"SELECT count(*) FROM {SocialApp._meta.db_table}")
-        except (OperationalError, ProgrammingError):
+            sys.stdout.write("Looking for the database...\n")
+            cursor = connections["default"].cursor()
+            cursor.execute(f"SELECT count(*) FROM {SocialApp._meta.db_table}")
+            assert cursor.fetchone()
+            time.sleep(2)  # Chill before startup
+        except (OperationalError, ProgrammingError, AssertionError):
             time.sleep(1)
             self._wait_for_db()

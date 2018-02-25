@@ -1,4 +1,4 @@
-{% load staticfiles %}{% load socialaccount %}<!DOCTYPE html>
+{% load staticfiles %}<!DOCTYPE html>
 <html lang="en">
 
   <head>
@@ -51,6 +51,7 @@
           <div class="col-lg-12 text-center">
             <a href="{% url 'archives' %}" class="label label-default" data-toggle="tooltip" title="API"><i class="fa fa-gears fa-fw"></i><span class="sr-only">API</span></a> &nbsp;
             <a href="https://twitter.com/thetweetpile" class="label label-default" data-toggle="tooltip" title="Say hello"><i class="fa fa-twitter fa-fw"></i><span class="sr-only">Contact</span></a>
+            <a href="https://gitlab.com/danielquinn/albatross" class="label label-default" data-toggle="tooltip" title="{{ release|truncatechars:11|cut:'.' }}"><i class="fa fa-github fa-fw"></i><span class="sr-only">Code is on Gitlab</span></a>
           </div>
         </div>
       </footer>
@@ -65,7 +66,7 @@
 
     <script type="application/javascript">
       $('[data-toggle="tooltip"]').tooltip();
-      var albatross = Albatross({
+      window.albatross = Albatross({
         api: {
           archives: {
             listing: "{% url 'archives' %}",

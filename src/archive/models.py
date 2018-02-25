@@ -22,7 +22,12 @@ class Archive(models.Model):
     ARCHIVES_URL = os.path.join(settings.MEDIA_URL, "archives")
 
     query = models.CharField(max_length=32)
-    user = models.ForeignKey("users.User", related_name="archives", null=True)
+    user = models.ForeignKey(
+        "users.User",
+        related_name="archives",
+        null=True,
+        on_delete=models.PROTECT
+    )
     started = models.DateTimeField(auto_created=True)
     stopped = models.DateTimeField(
         blank=True, null=True, help_text="Defaults to start + 24hours")
@@ -116,7 +121,8 @@ class Event(models.Model):
     are plotted on the hours chart.
     """
 
-    archive = models.ForeignKey(Archive, related_name="events")
+    archive = models.ForeignKey(
+        Archive, related_name="events", on_delete=models.CASCADE)
     time = models.DateTimeField()
     label = models.CharField(max_length=64)
 
@@ -133,7 +139,8 @@ class Tweet(models.Model):
     figured out, this will stick around.
     """
     id = models.BigIntegerField(primary_key=True)
-    archive = models.ForeignKey("archive.Archive", related_name="tweets")
+    archive = models.ForeignKey(
+        "archive.Archive", related_name="tweets", on_delete=models.CASCADE)
     created = models.DateTimeField(db_index=True)
     mentions = ArrayField(
         models.CharField(max_length=64), blank=True, null=True)

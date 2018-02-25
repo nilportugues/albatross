@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ('colour_overrides', models.TextField(blank=True, help_text='A JSON field used to override the colours used by c3 in generating pie charts.')),
                 ('total', models.PositiveIntegerField(default=0)),
                 ('size', models.PositiveIntegerField(help_text='The size, in bytes, of the tweets field', default=0)),
-                ('user', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='archives')),
+                ('user', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='archives', on_delete=models.PROTECT)),
             ],
             options={
                 'ordering': ('-started',),
@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ('mentions', django.contrib.postgres.fields.ArrayField(blank=True, null=True, base_field=models.CharField(max_length=64), size=None)),
                 ('hashtags', django.contrib.postgres.fields.ArrayField(blank=True, null=True, base_field=models.CharField(max_length=280), size=None)),
                 ('text', models.CharField(max_length=256, db_index=True)),
-                ('archive', models.ForeignKey(related_name='tweets', to='archive.Archive')),
+                ('archive', models.ForeignKey(related_name='tweets', to='archive.Archive', on_delete=models.CASCADE)),
             ],
         ),
     ]

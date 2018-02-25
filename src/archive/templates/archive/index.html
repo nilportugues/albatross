@@ -14,7 +14,7 @@
 
 {% block banner %}
   <div class="shiny">
-    <h1>TweetPile<span class="beta">BETA</span></h1>
+    <h1>Albatross<span class="beta">BETA</span></h1>
     <p class="lead">Collect whatever is said, about whatever you like.</p>
   </div>
 {% endblock banner %}
@@ -63,13 +63,7 @@
       </form>
     {% else %}
       <h3 class="text-center">
-        To start your own collection, {% for provider in socialaccount.providers %}
-          <a
-            title="Log in with {{ provider.name }}"
-            class="socialaccount_provider {{ provider.id }} btn btn-info"
-            href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}"
-          >Log In <i class="fa fa-fw fa-twitter"></i></a>
-        {% endfor %}
+        To start your own collection, <a title="Log in with Twitter" class="btn btn-info" href="{% provider_login_url 'twitter' %}">Log In <i class="fa fa-fw fa-twitter"></i></a>
       </h3>
     {% endif %}
   </div>

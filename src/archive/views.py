@@ -3,7 +3,7 @@ import functools
 
 from datetime import datetime
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib import messages
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
@@ -161,7 +161,7 @@ class ArchiveDistillationView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def __init__(self, **kwargs):
-        APIView.__init__(self, **kwargs)
+        super().__init__(**kwargs)
         self.archive = None
 
     def get(self, request, *args, **kwargs):
