@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "caa4d18a42d35a6bd96d458d22de24877f5b31f647eb7b61a3a62550c3930fb1"
+            "sha256": "b16817c14e01888710b8c17433f4476e5a2465993fb363f0a1894a427045904d"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -9,9 +9,9 @@
             "os_name": "posix",
             "platform_machine": "x86_64",
             "platform_python_implementation": "CPython",
-            "platform_release": "4.15.3-2-ARCH",
+            "platform_release": "4.15.5-1-ARCH",
             "platform_system": "Linux",
-            "platform_version": "#1 SMP PREEMPT Thu Feb 15 00:13:49 UTC 2018",
+            "platform_version": "#1 SMP PREEMPT Thu Feb 22 22:15:20 UTC 2018",
             "python_full_version": "3.6.4",
             "python_version": "3.6",
             "sys_platform": "linux"
@@ -29,16 +29,10 @@
     "default": {
         "amqp": {
             "hashes": [
-                "sha256:e0ed0ce6b8ffe5690a2e856c7908dc557e0e605283d6885dd1361d79f2928908",
-                "sha256:2dea4d16d073c902c3b89d9b96620fb6729ac0f7a923bbc777cb4ad827c0c61a"
+                "sha256:4e28d3ea61a64ae61830000c909662cb053642efddbe96503db0e7783a6ee85b",
+                "sha256:cba1ace9d4ff6049b190d8b7991f9c1006b443a5238021aca96dd6ad2ac9da22"
             ],
-            "version": "==1.4.9"
-        },
-        "anyjson": {
-            "hashes": [
-                "sha256:37812d863c9ad3e35c0734c42e0bf0320ce8c3bed82cd20ad54cb34d158157ba"
-            ],
-            "version": "==0.3.3"
+            "version": "==2.2.2"
         },
         "certifi": {
             "hashes": [
@@ -167,10 +161,10 @@
         },
         "kombu": {
             "hashes": [
-                "sha256:2c59a5e087d5895675cdb4d6a38a0aa147f0411366e68330a76e480ba3b25727",
-                "sha256:22ab336a17962717a5d9470547e5508d4bcf1b6ec10cd9486868daf4e5edb727"
+                "sha256:01f0da9fe222a2183345004243d1518c0fbe5875955f1b24842f2d9c65709ade",
+                "sha256:4249d9dd9dbf1fcec471d1c2def20653c9310dd1a217272d77e4844f9d5273cb"
             ],
-            "version": "==3.0.35"
+            "version": "==4.1.0"
         },
         "numpy": {
             "hashes": [
@@ -391,6 +385,13 @@
                 "sha256:cc44da8e1145637334317feebd728bd869a35285b93cbb4cca2577da7e62db4f"
             ],
             "version": "==1.22"
+        },
+        "vine": {
+            "hashes": [
+                "sha256:6849544be74ec3638e84d90bc1cf2e1e9224cc10d96cd4383ec3f69e9bce077b",
+                "sha256:52116d59bc45392af9fdd3b75ed98ae48a93e822cee21e5fda249105c59a7a72"
+            ],
+            "version": "==1.1.4"
         },
         "wcwidth": {
             "hashes": [
