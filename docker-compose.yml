@@ -4,12 +4,15 @@ services:
 
   postgres:
     image: postgres:alpine
+    restart: on-failure
 
   rabbitmq:
     image: rabbitmq:alpine
+    restart: on-failure
 
   redis:
     image: redis:alpine
+    restart: on-failure
 
   #
   # This is a temporary container initialised just to setup the database and
