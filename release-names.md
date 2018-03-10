@@ -1,7 +1,7 @@
 # Villains
 
 * Apocalypse (Marvel)
-* Bellatrix (Harry Potter)
+* Bellatrix Lestrange (Harry Potter)
 * Cersei Baratheon (Game of Thrones)
 * Darth Vader (Star Wars)
 * Emma Frost (Marvel)
