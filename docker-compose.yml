@@ -29,6 +29,23 @@ services:
     entrypoint: '/bin/sh /app/docker/setup'
 
   #
+  # Celery is the service that's used by the webserver and collector to
+  # asynchronously queue up jobs.
+  #
+  celery:
+    image: danielquinn/albatross
+    depends_on:
+      - postgres
+      - rabbitmq
+      - redis
+      - setup
+    volumes:
+      - .:/app
+    user: app
+    working_dir: /app/src
+    entrypoint: 'celery worker --app albatross -l info'
+
+  #
   # The part that talks to Twitter and pulls down the data.  It's
   # multi-threaded, and I don't recommend scaling this.
   #
