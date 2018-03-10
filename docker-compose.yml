@@ -43,7 +43,7 @@ services:
       - .:/app
     user: app
     working_dir: /app/src
-    entrypoint: 'celery worker --app albatross -l info'
+    entrypoint: 'celery worker --app albatross -l warn'
 
   #
   # The part that talks to Twitter and pulls down the data.  It's
