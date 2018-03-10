@@ -20,7 +20,7 @@ services:
   # and can be manually removed afterward.
   #
   setup:
-    build: ./
+    image: danielquinn/albatross
     depends_on:
       - postgres
     volumes:
@@ -33,7 +33,7 @@ services:
   # multi-threaded, and I don't recommend scaling this.
   #
   collector:
-    build: ./
+    image: danielquinn/albatross
     depends_on:
       - postgres
       - rabbitmq
@@ -51,7 +51,7 @@ services:
   # probably don't need to scale this.
   #
   web:
-    build: ./
+    image: danielquinn/albatross
     depends_on:
       - postgres
       - redis

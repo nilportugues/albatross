@@ -2,6 +2,7 @@
 
 A Twitter live-data collector.  Keep an eye on your disk space ;-)
 
+
 ## Setup
 
 Everything is dockerised, so you need:
@@ -23,12 +24,17 @@ Everything is dockerised, so you need:
   Note that the values aren't wrapped in quotes.  You can thank Docker for
   that.
 
+
 ## Running
 
-Just run `docker-compose up` and wait while it downloads all of the components
-and starts up the various containers.  When it's finished, you should be able
-to visit http://localhost:8000/ and then login with Twitter to start your
-first collection.
+It's currently two steps: building the container and running the composer:
+
+1. `docker build . -t danielquinn/albatross`
+2. `docker-compose up`
+
+When it's finished, you should be able to visit http://localhost:8000/ and then
+login with Twitter to start your first collection.
+
 
 ## Architecture
 
@@ -47,9 +53,16 @@ backfill tweets however I'm going to have to experiment with the API limits
 on the REST search query:
 
 ```python
-for tweet in tweepy.Cursor(api.search, "#marr").items(100):
+import tweepy
+socialtoken = SocialToken.objects.first()
+socialapp = SocialApp.objects.get(pk=1)
+auth = tweepy.OAuthHandler(socialapp.client_id, socialapp.secret)
+auth.set_access_token(socialtoken.token, socialtoken.token_secret)
+
+for tweet in tweepy.Cursor(tweepy.API(auth).search, "fuck").items(10):
     print(f"{tweet.created_at}: {tweet.text}")
 ```
+
 
 ### Distilling
 
