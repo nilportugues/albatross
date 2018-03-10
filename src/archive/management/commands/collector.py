@@ -17,6 +17,7 @@ from albatross.logging import LogMixin
 from users.models import User
 
 from ...models import Archive
+from ...tasks import backfill, consolidate
 from ..listeners import StreamArchiver
 from ..mixins import NotificationMixin
 
@@ -96,6 +97,7 @@ class Command(LogMixin, NotificationMixin, BaseCommand):
     def start_tracking(self, archive):
 
         if archive not in self.tracking:
+            backfill.delay(archive.pk)
             self.tracking.append(archive)
 
         archive.is_running = True
@@ -103,6 +105,7 @@ class Command(LogMixin, NotificationMixin, BaseCommand):
 
     def stop_tracking(self, archive):
         if archive in self.tracking:
+            consolidate.delay(archive.pk)
             self.tracking.remove(archive)
         archive.is_running = False
         archive.save(update_fields=("is_running",))

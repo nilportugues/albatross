@@ -8,8 +8,10 @@ from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
+from albatross.logging import LogMixin
 
-class Archive(models.Model):
+
+class Archive(LogMixin, models.Model):
 
     STATUS_ACTIVE = 1
     STATUS_DISABLED = 2
@@ -74,21 +76,23 @@ class Archive(models.Model):
         path = os.path.join(self.ARCHIVES_DIR, "raw", f"{self.pk:05}*fjson.xz")
         return sum([os.stat(f).st_size for f in glob.glob(path)])
 
-    def get_raw_path(self, suffix=None):
+    def get_raw_path(self, prefix="", suffix=None):
         suffix = f"-{suffix}" if suffix else ""
         return os.path.join(
-            self.ARCHIVES_DIR, "raw", f"{self.pk:09}{suffix}.fjson.xz")
+            self.ARCHIVES_DIR, "raw", f"{prefix}{self.pk:09}{suffix}.fjson.xz")
 
     def get_tweets(self):
         """
         Collect all tweets from all compressed files and give us a generator
         yielding one tweet per iteration.
         """
-        path = os.path.join(self.ARCHIVES_DIR, "raw", f"{self.pk:09}*fjson.xz")
-        for p in sorted(glob.glob(path)):
-            with lzma.open(p) as f:
-                for line in f:
-                    yield str(line.strip(), "UTF-8")
+        for p in self._get_tweet_archive_paths():
+            try:
+                with lzma.open(p) as f:
+                    for line in f:
+                        yield str(line.strip(), "UTF-8")
+            except EOFError:
+                continue
 
     def get_tweets_url(self):
         if not os.path.exists(self.get_raw_path()):
@@ -113,6 +117,33 @@ class Archive(models.Model):
     def stop(self):
         self.stopped = datetime.datetime.now(tz=pytz.UTC)
         self.save(update_fields=("stopped",))
+
+    def consolidate(self):
+
+        consolidated_path = self.get_raw_path(prefix=".")
+        if os.path.exists(consolidated_path):
+            return
+
+        self.logger.debug(f"Compiling tweets for {self}")
+
+        # Rewrite all tweets to one compressed file
+        with lzma.open(consolidated_path, "wb") as f:
+            for tweet in self.get_tweets():
+                f.write(bytes(tweet, "UTF-8") + b"\n")
+
+        # Delete the rest
+        for path in self._get_tweet_archive_paths():
+            self.logger.debug(f"Deleting {path}")
+            os.unlink(path)
+
+        os.rename(consolidated_path, self.get_raw_path())
+
+    def _get_tweet_archive_paths(self):
+        return sorted(glob.glob(os.path.join(
+            self.ARCHIVES_DIR,
+            "raw",
+            f"{self.pk:09}*fjson.xz"
+        )))
 
 
 class Event(models.Model):

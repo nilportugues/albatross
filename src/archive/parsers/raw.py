@@ -5,6 +5,11 @@ from django.utils.timezone import now
 
 
 class RawParser:
+    """
+    The component that actually writes the raw data to the archive file.  We
+    compile a series of tweets in ``.collect()`` and dump them out to a
+    compressed log file in ``.generate()``.
+    """
 
     def __init__(self, archive):
         self.archive = archive
@@ -19,5 +24,5 @@ class RawParser:
 
     def generate(self):
         suffix = now().strftime("%Y%m%d%H%M%S")
-        with lzma.open(self.archive.get_raw_path(suffix), "wb") as f:
+        with lzma.open(self.archive.get_raw_path(suffix=suffix), "wb") as f:
             f.write(bytes(self.log, "UTF-8"))
