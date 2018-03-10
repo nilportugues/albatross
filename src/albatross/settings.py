@@ -141,6 +141,15 @@ MEDIA_URL = "/media/"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s "
+                      "%(process)d %(thread)d %(message)s"
+        },
+        "indented": {
+            "format": "%(levelname).1s %(asctime)s %(name)s: %(message)s"
+        },
+    },
     "filters": {
         "require_debug_false": {
             "()": "django.utils.log.RequireDebugFalse"
@@ -151,11 +160,20 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.NullHandler",
         },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "indented"
+        }
     },
     "loggers": {
         "django.security.DisallowedHost": {
             "handlers": ["null"],
             "propagate": False,
+        },
+        "albatross": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "WARNING"),
         },
     }
 }

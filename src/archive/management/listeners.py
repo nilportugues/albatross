@@ -5,6 +5,7 @@ from django.conf import settings
 from kombu import Connection
 from tweepy import StreamListener
 
+from albatross.logging import LogMixin
 from users.models import User
 
 from ..models import Archive
@@ -12,7 +13,7 @@ from .consumers import ArchiveConsumer
 from .mixins import NotificationMixin
 
 
-class StreamArchiver(NotificationMixin, StreamListener):
+class StreamArchiver(LogMixin, NotificationMixin, StreamListener):
 
     def __init__(self, archives, verbosity=1, *args, **kwargs):
 
@@ -42,7 +43,8 @@ class StreamArchiver(NotificationMixin, StreamListener):
                 })
 
     def set_verbosity(self, verbosity):
-        print("Setting {} stream verbosity to {}".format(self.user, verbosity))
+        self.logger.info(
+            "Setting {} stream verbosity to {}".format(self.user, verbosity))
         self.verbosity = verbosity
         for channel in self.channels:
             channel["consumer"].set_verbosity(self.verbosity)
@@ -127,7 +129,7 @@ class StreamArchiver(NotificationMixin, StreamListener):
         for channel in self.channels:
             while not channel["consumer"].is_stopped:
                 if self.verbosity > 1:
-                    print("Waiting for {} to stop".format(
+                    self.logger.info("Waiting for {} to stop".format(
                         channel["consumer"].archive)
                     )
                 sleep(0.1)

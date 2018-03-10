@@ -13,6 +13,7 @@ from django.db import connections
 from django.db.models.query_utils import Q
 from django.db.utils import OperationalError, ProgrammingError
 
+from albatross.logging import LogMixin
 from users.models import User
 
 from ...models import Archive
@@ -20,7 +21,7 @@ from ..listeners import StreamArchiver
 from ..mixins import NotificationMixin
 
 
-class Command(NotificationMixin, BaseCommand):
+class Command(LogMixin, NotificationMixin, BaseCommand):
     """
     Loop forever checking the db for when to start/stop an archive.  New
     streams are stored in self.streams, keyed by the user owning the stream.
@@ -51,8 +52,7 @@ class Command(NotificationMixin, BaseCommand):
 
         self.verbosity = options.get("verbosity", self.verbosity)
 
-        if self.verbosity > 0:
-            sys.stdout.write("Starting Collector\n")
+        self.logger.info("Starting Collector\n")
 
         signal.signal(signal.SIGINT, self.exit)
         signal.signal(signal.SIGTERM, self.exit)
@@ -60,24 +60,21 @@ class Command(NotificationMixin, BaseCommand):
         try:
             self.loop()
         except Exception as e:
-            sys.stdout.write("Exception: {}".format(e))
-            sys.stdout.write(traceback.format_exc())
+            self.logger.error("Exception: {}".format(e))
+            self.logger.error(traceback.format_exc())
             self.exit()
 
     def exit(self, *args):
 
-        if self.verbosity > 0:
-            sys.stdout.write(f"Exit called with {args}\n")
+        self.logger.info(f"Exit called with {args}\n")
 
         for user, stream in self.streams.items():
-            if self.verbosity > 1:
-                sys.stdout.write(f"  Killing stream for {user}: ")
+            self.logger.info(f"  Killing stream for {user}: ")
             stream.disconnect()
             stream.listener.close_log()
-            if self.verbosity > 1:
-                sys.stdout.write("[ DONE ]\n")
+            self.logger.info("[ DONE ]\n")
 
-        sys.stdout.write("Exiting gracefully\n")
+        self.logger.info("Exiting gracefully\n")
         sys.exit(0)
 
     def loop(self):
@@ -97,8 +94,10 @@ class Command(NotificationMixin, BaseCommand):
             time.sleep(self.LOOP_TIME)
 
     def start_tracking(self, archive):
+
         if archive not in self.tracking:
             self.tracking.append(archive)
+
         archive.is_running = True
         archive.save(update_fields=("is_running",))
 
@@ -110,10 +109,7 @@ class Command(NotificationMixin, BaseCommand):
 
     def adjust_connections(self, to_start, to_stop):
 
-        if self.verbosity > 1:
-            sys.stdout.write(
-                "Adjusting connections: {}\n".format(self.tracking)
-            )
+        self.logger.info("Adjusting connections: {}\n".format(self.tracking))
 
         users_adjusting = [a.user for a in list(to_start) + list(to_stop)]
 
@@ -140,8 +136,7 @@ class Command(NotificationMixin, BaseCommand):
                 groups[archive.user].append(archive)
 
         for user, archives in groups.items():
-            if self.verbosity > 1:
-                sys.stdout.write("Connecting: {}::{}\n".format(user, archives))
+            self.logger.info("Connecting: {}::{}\n".format(user, archives))
             try:
                 api = self._authenticate(user)
                 self.streams[user] = tweepy.Stream(
@@ -154,7 +149,7 @@ class Command(NotificationMixin, BaseCommand):
                     async=True
                 )
             except Exception as e:
-                self._alert("Tweetpile collector exception [collector]", e)
+                self._alert("Albatross collector exception [collector]", e)
 
             time.sleep(self.LISTENER_WAIT_TIME)
 
@@ -188,7 +183,7 @@ class Command(NotificationMixin, BaseCommand):
         to_restart = []
         for user, stream in self.streams.items():
             if not stream.running:
-                sys.stdout.write("Reconnection required: {}\n".format(user))
+                self.logger.warning("Reconnection required: {}\n".format(user))
                 for channel in stream.listener.channels:
                     to_restart.append(channel["archive"].pk)
 
@@ -220,7 +215,7 @@ class Command(NotificationMixin, BaseCommand):
 
     def _wait_for_db(self):
         try:
-            sys.stdout.write("Looking for the database...\n")
+            self.logger.info("Looking for the database...\n")
             cursor = connections["default"].cursor()
             cursor.execute(f"SELECT count(*) FROM {SocialApp._meta.db_table}")
             assert cursor.fetchone()

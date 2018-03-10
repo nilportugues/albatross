@@ -6,7 +6,8 @@ from kombu import Queue
 from kombu.mixins import ConsumerMixin
 
 import ujson as json
-from .mixins import NotificationMixin
+from albatross.logging import LogMixin
+
 from ..parsers import (
     CloudParser,
     ImagesParser,
@@ -15,9 +16,10 @@ from ..parsers import (
     SearchParser,
     StatisticsParser
 )
+from .mixins import NotificationMixin
 
 
-class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
+class ArchiveConsumer(LogMixin, NotificationMixin, ConsumerMixin, Thread):
 
     DISTILLATION_WINDOW = 60 * 5  # Seconds wait between distillations
 
@@ -41,13 +43,6 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
         self.is_stopped = True
         self.last_distilled = None
 
-    def set_verbosity(self, verbosity):
-        print("Setting {} consumer verbosity to {}".format(
-            self.archive,
-            verbosity
-        ))
-        self.verbosity = verbosity
-
     def start(self):
 
         self.is_stopped = False
@@ -63,8 +58,8 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
 
         super().start()
 
-        if self.verbosity > 0:
-            print("Consumer started for archive #{}".format(self.archive.pk))
+        self.logger.info(
+            "Consumer started for archive #{}".format(self.archive.pk))
 
     def run(self, _tokens=1, **kwargs):
         try:
@@ -112,45 +107,47 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
 
         now = timezone.now()
 
-        if self.verbosity > 2:
-            print("{} ({}): {} processed in {}s".format(
-                self.archive.query,
-                self.archive.total,
-                now,
-                (now - timer).total_seconds()
-            ))
+        self.logger.debug("{} ({}): {} processed in {}s".format(
+            self.archive.query,
+            self.archive.total,
+            now,
+            (now - timer).total_seconds()
+        ))
 
         window = self.DISTILLATION_WINDOW
         if (now - self.last_distilled).total_seconds() > window:
             self._write_distillations()
-        elif self.verbosity > 2:
-            print("Skipping distillation")
+        else:
+            self.logger.debug("Skipping distillation")
 
     def on_consume_ready(self, connection, channel, consumers, **kwargs):
-        if self.verbosity > 1:
-            print('Readying consumption for "{}" (#{})'.format(
-                self.archive.query,
-                self.archive.pk
-            ))
+        self.logger.info('Readying consumption for "{}" (#{})'.format(
+            self.archive.query,
+            self.archive.pk
+        ))
         self._compile_aggregates()
 
     def on_consume_end(self, connection, channel):
 
-        if self.verbosity > 1:
-            print('Closing consumption for "{}" (#{})'.format(
-                self.archive.query,
-                self.archive.pk
-            ))
+        self.logger.info('Closing consumption for "{}" (#{})'.format(
+            self.archive.query,
+            self.archive.pk
+        ))
 
         self._write_distillations()
         self.is_stopped = True
 
     def _write_distillations(self):
+        """
+        These are distillations that run within ``DISTILLATION_WINDOW``.  These
+        are separate from the final distillation that rolls all of these result
+        files into one.
+        :return:
+        """
 
         now = timezone.now()
 
-        if self.verbosity > 1:
-            print("Writing aggregates for {}".format(self.archive))
+        self.logger.info("Writing aggregates for {}".format(self.archive))
 
         self.last_distilled = now
         self.raw.generate()
@@ -172,8 +169,7 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
 
     def _compile_aggregates(self):
 
-        if self.verbosity > 1:
-            print("Compiling aggregates for {}".format(self.archive))
+        self.logger.info("Compiling aggregates for {}".format(self.archive))
 
         self.aggregates = {
             "cloud": [],
@@ -185,23 +181,23 @@ class ArchiveConsumer(NotificationMixin, ConsumerMixin, Thread):
         self.archive.total = 0
         for line in self.archive.get_tweets():
             if self.should_stop:
-                if self.verbosity > 1:
-                    print(f"Stopping aggregate compilation for {self.archive}")
+                self.logger.info(
+                    f"Stopping aggregate compilation for {self.archive}"
+                )
                 return
             last_tweet_time = self._parse_line(line)
 
         self.archive.total = self.statistics.aggregate["total"]
 
-        if self.verbosity > 0:
-            print(
-                "Aggregate compilation for {} complete. "
-                "{} tweets accounted for. "
-                "The last tweet was created at {}".format(
-                    self.archive,
-                    self.archive.total,
-                    last_tweet_time
-                )
+        self.logger.info(
+            "Aggregate compilation for {} complete. "
+            "{} tweets accounted for. "
+            "The last tweet was created at {}".format(
+                self.archive,
+                self.archive.total,
+                last_tweet_time
             )
+        )
 
     def _parse_line(self, line):
 
