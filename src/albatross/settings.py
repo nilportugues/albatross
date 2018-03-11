@@ -193,19 +193,6 @@ MESSAGE_TAGS = {
 }
 
 
-# Caching
-
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
-}
-
-
 # Celery & Async Stuffs
 
 CELERY_ACCEPT_CONTENT = ["json"]
