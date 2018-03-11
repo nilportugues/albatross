@@ -78,7 +78,7 @@ class StreamArchiver(LogMixin, NotificationMixin, StreamListener):
         additional = "Source: {}".format(self.raw_data)
 
         self._alert(
-            "TweetPile collector exception [listener]", exception, additional)
+            "Collector exception [listener]", exception, additional)
 
         stderr.write("\n\nEXCEPTION:\n{}\n\nSource: {}\n".format(
             exception, additional))
@@ -98,7 +98,7 @@ class StreamArchiver(LogMixin, NotificationMixin, StreamListener):
             self.user.status = User.STATUS_DISABLED
             self.user.save(update_fields=("status",))
 
-        self._alert("TweetPile collector Twitter error", message)
+        self._alert("Collector Twitter error", message)
 
         stderr.write("ERROR: Twitter responded with {}".format(status_code))
 
@@ -111,7 +111,7 @@ class StreamArchiver(LogMixin, NotificationMixin, StreamListener):
         This is what happens if *Twitter* sends a disconnect, not if we
         disconnect from the stream ourselves.
         """
-        self._alert("TweetPile collector disconnect", str(notice))
+        self._alert("Collector disconnect", str(notice))
         stderr.write("\n\nTwitter disconnect: {}\n\n\n".format(notice))
         self.close_log()
         return False

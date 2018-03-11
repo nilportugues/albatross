@@ -2,7 +2,7 @@
 <html lang="en">
 
   <head>
-    <title>TweetPile: Collect whatever is said, about whatever you like.</title>
+    <title>Albatross: Collect whatever is said, about whatever you like.</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -18,7 +18,7 @@
     <div class="navbar navbar-inverse">
       <div class="container">
         <div class="navbar-header">
-          <a href="{% url 'index' %}" class="navbar-brand">TweetPile</a>
+          <a href="{% url 'index' %}" class="navbar-brand">Albatross</a>
           <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
             <i class="fa fa-bars"></i>
           </button>
@@ -50,7 +50,6 @@
         <div class="row">
           <div class="col-lg-12 text-center">
             <a href="{% url 'archives' %}" class="label label-default" data-toggle="tooltip" title="API"><i class="fa fa-gears fa-fw"></i><span class="sr-only">API</span></a> &nbsp;
-            <a href="https://twitter.com/thetweetpile" class="label label-default" data-toggle="tooltip" title="Say hello"><i class="fa fa-twitter fa-fw"></i><span class="sr-only">Contact</span></a>
             <a href="https://gitlab.com/danielquinn/albatross" class="label label-default" data-toggle="tooltip" title="{{ release|truncatechars:11|cut:'.' }}"><i class="fa fa-github fa-fw"></i><span class="sr-only">Code is on Gitlab</span></a>
           </div>
         </div>

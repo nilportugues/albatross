@@ -32,8 +32,6 @@ class Command(LogMixin, NotificationMixin, BaseCommand):
     CHILL_TIME = 30  # 420: Enhance your calm
     LISTENER_WAIT_TIME = 5  # Time to wait between starting listeners
 
-    VERBOSITY_FILE = "/tmp/tweetpile-collector.verbosity"
-
     def __init__(self):
 
         BaseCommand.__init__(self)

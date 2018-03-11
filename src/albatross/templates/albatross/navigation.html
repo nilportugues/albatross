@@ -4,7 +4,6 @@
   <li><a href="{% url 'index' %}">Home</a></li>
 {% endif %}
 <li class="{{ navigation.about }}"><a href="{% url 'about' %}">About</a></li>
-<li class="{{ navigation.contact }}"><a href="{% url 'contact' %}">Contact</a></li>
 {% if not user.is_authenticated %}
   <li>
 		<a title="Log in with Twitter" href="{% provider_login_url 'twitter' %}">Log In <i class="fa fa-fw fa-twitter"></i></a>

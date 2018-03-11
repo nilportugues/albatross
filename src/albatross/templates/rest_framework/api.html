@@ -4,7 +4,7 @@
 {% load staticfiles %}
 
 
-{% block title %}TweetPile :: API{% endblock title %}
+{% block title %}Albatross :: API{% endblock title %}
 
 
 {% block style %}
@@ -16,8 +16,8 @@
 
 
 {% block branding %}
-  <a class='navbar-brand' rel="nofollow" href='http://tweetpile.com/'>
-    TweetPile <small style="opacity: 0.8">Collect whatever is said, about whatever you like.</small>
+  <a class='navbar-brand' rel="nofollow" href='{% url 'index' %}'>
+    Albatross <small style="opacity: 0.8">Collect whatever is said, about whatever you like.</small>
   </a>
 {% endblock %}
 
@@ -32,14 +32,6 @@
   {{ block.super }}
 
   <div class="clearfix"></div>
-
-  <footer>
-    <div class="row">
-      <div class="col-lg-12 text-center">
-        <a href="https://twitter.com/thetweetpile" class="label label-default" data-toggle="tooltip" title="Say hello"><i class="fa fa-twitter fa-fw"></i><span class="sr-only">Contact</span></a>
-      </div>
-    </div>
-  </footer>
 
   <script type="application/javascript">
     $('[data-toggle="tooltip"]').tooltip();

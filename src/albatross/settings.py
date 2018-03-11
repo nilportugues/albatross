@@ -29,31 +29,28 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "n").lower() in ("y", "yes", "1", "t", "true")
 
-_allowed_hosts = os.getenv("ALLOWED_HOSTS")
-ALLOWED_HOSTS = []
-if _allowed_hosts:
-    ALLOWED_HOSTS = _allowed_hosts.split(",")
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = (
 
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.sites',
-    'django.contrib.staticfiles',
-    'django.contrib.postgres',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.sites",
+    "django.contrib.staticfiles",
+    "django.contrib.postgres",
 
     "django_extensions",
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.twitter',
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.twitter",
 
     "albatross",
     "archive",
@@ -65,47 +62,47 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = (
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
-ROOT_URLCONF = 'albatross.urls'
+ROOT_URLCONF = "albatross.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'albatross.context_processors.constants',
-                'albatross.context_processors.navigation',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "albatross.context_processors.constants",
+                "albatross.context_processors.navigation",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'albatross.wsgi.application'
+WSGI_APPLICATION = "albatross.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': "postgres",
-        'HOST': "postgres"
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "HOST": "postgres"
     }
 }
 if os.getenv("DATABASES_OVERRIDE"):
@@ -115,9 +112,9 @@ if os.getenv("DATABASES_OVERRIDE"):
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 
-LANGUAGE_CODE = 'en-gb'
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -181,7 +178,7 @@ LOGGING = {
 
 # Mail
 
-DEFAULT_FROM_EMAIL = '"TweetPile" <noreply@tweetpile.com>'
+DEFAULT_FROM_EMAIL = '"Albatross" <noreply@example.com>'
 SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 __admins = os.getenv("ADMINS")
@@ -213,7 +210,7 @@ CACHES = {
 
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
-BROKER_URL = 'amqp://guest:guest@rabbitmq:5672/'
+BROKER_URL = "amqp://guest:guest@rabbitmq:5672/"
 
 
 # Django-allauth
@@ -224,8 +221,8 @@ class DummyForm(forms.Form):
 
 SITE_ID = 1
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 )
 ACCOUNT_FORMS = {
     "signup": DummyForm,
