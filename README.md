@@ -43,8 +43,8 @@ contributions are welcome!
 
 The raw data is available as a xzip-compressed "fjson" file.  This is just a
 plain text file, with one JSON object per line.  You can decompress this file
-in Linux & Mac with the <code>xz</code> utility, or use a common program like
-WinRar in Windows.
+in Linux & Mac with the `xz` utility, or use a common program like WinRar in
+Windows.
 
 
 ## Setup
@@ -71,10 +71,11 @@ Everything is dockerised, so you need:
 
 ## Running
 
-It's currently two steps: building the container and running the composer:
+Docker makes this easy:
 
-1. `docker build . -t danielquinn/albatross`
-2. `docker-compose up`
+```bash
+docker-compose up
+```
 
 When it's finished, you should be able to visit http://localhost:8000/ and then
 login with Twitter to start your first collection.
@@ -85,3 +86,15 @@ login with Twitter to start your first collection.
 Here's what it's doing under the hood:
 
 ![Architecture](docs/architecture.png)
+
+
+## State of the Project
+
+I wrote this back in 2015 ago as an attempt to start a company doing this sort
+of thing for people & businesses, but not long after I had a working model,
+Twitter started acting more and more hostile to projects that would dare store
+"their" data, so I gave up on it.
+
+In 2018 however, I repurposed Albatross into a self-hosted model to help a
+friend do some research for her PhD.  If it works for her, it may work for
+others, so I decided to polish it up a bit and re-license it under the AGPL3. 
