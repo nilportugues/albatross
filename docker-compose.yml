@@ -73,6 +73,6 @@ services:
     ports:
       - '8000:8000'
     user: app
-    stop_grace_period: 1s
+    stop_grace_period: 5s
     restart: on-failure
     entrypoint: '/app/src/manage.py runserver 0.0.0.0:8000 --insecure'
