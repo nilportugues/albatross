@@ -85,7 +85,7 @@ login with Twitter to start your first collection.
 
 Here's what it's doing under the hood:
 
-![Architecture](docs/architecture.png)
+![Architecture](https://raw.githubusercontent.com/danielquinn/albatross/master/docs/architecture.png)
 
 
 ## State of the Project
