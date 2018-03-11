@@ -90,8 +90,8 @@ Here's what it's doing under the hood:
 
 ## State of the Project
 
-I wrote this back in 2015 ago as an attempt to start a company doing this sort
-of thing for people & businesses, but not long after I had a working model,
+I wrote this back in 2015 as an attempt to start a company doing this sort of
+thing for people & businesses.  However, not long after I had a working model,
 Twitter started acting more and more hostile to projects that would dare store
 "their" data, so I gave up on it.
 
