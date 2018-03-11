@@ -58,9 +58,9 @@ Everything is dockerised, so you need:
     PYTHONUNBUFFERED=1
 
     SECRET_KEY=<secret>
-    DEBUG=true
+    DEBUG=false
     ADMINS=[["Your Name", "your@email.address"]]
-    VERBOSITY=3
+    DJANGO_LOG_LEVEL="INFO"
 
     TWITTER_CONSUMER_KEY=<secret>
     TWITTER_CONSUMER_SECRET=<secret>
