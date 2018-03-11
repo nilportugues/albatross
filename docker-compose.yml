@@ -26,6 +26,7 @@ services:
     volumes:
       - .:/app
     user: app
+    restart: no
     entrypoint: '/bin/sh /app/docker/setup'
 
   #
@@ -43,6 +44,8 @@ services:
       - .:/app
     user: app
     working_dir: /app/src
+    stop_grace_period: 1m
+    restart: on-failure
     entrypoint: 'celery worker --app albatross -l warn'
 
   #
@@ -59,9 +62,9 @@ services:
     volumes:
       - .:/app
     user: app
-    entrypoint: "/app/src/manage.py collector --verbosity ${VERBOSITY}"
     stop_grace_period: 1m
     restart: on-failure
+    entrypoint: "/app/src/manage.py collector"
 
   #
   # The webserver interface.  Unless you're making this world-facing, you
@@ -78,6 +81,6 @@ services:
     ports:
       - '8000:8000'
     user: app
-    entrypoint: '/bin/sh /app/docker/web'
     stop_grace_period: 1s
     restart: on-failure
+    entrypoint: '/app/src/manage.py runserver 0.0.0.0:8000 --insecure'
